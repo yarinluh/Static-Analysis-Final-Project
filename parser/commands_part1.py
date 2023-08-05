@@ -18,7 +18,7 @@ class Command:
     def __init__(self, command_text: str):
         self.command_text: List[str] = command_text.split(" ")
         self.command_type: CommandType = self.get_command_type()
-        self.get_command_parameters: dict = self.get_command_parameters()
+        self.command_parameters: dict = self.get_command_parameters()
 
     def get_command_type(self) -> CommandType:
         if self.command_text == ["skip"]:
@@ -103,3 +103,28 @@ class Command:
 
         if self.command_type == CommandType.C_Assert:
             return {"ORC": ORCondition(orcondition_text=' '.join(self.command_text[1:]))}     
+        
+    def __repr__(self) -> str:
+        if self.command_type == CommandType.C_Skip:
+            return 'skip'
+
+        if self.command_type == CommandType.C_Assign_Var:
+            return f"{self.command_parameters['i']} {ASSIGNMENT} {self.command_parameters['j']}"
+
+        if self.command_type == CommandType.C_Assign_Const:
+            return f"{self.command_parameters['i']} {ASSIGNMENT} {self.command_parameters['K']}"
+
+        if self.command_type == CommandType.C_Assign_Unknown:
+            return f"{self.command_parameters['i']} {ASSIGNMENT} {QUESTION_MARK}"
+
+        if self.command_type == CommandType.C_Plus1:
+            return f"{self.command_parameters['i']} {ASSIGNMENT} {self.command_parameters['j']} {PLUS} {ONE_DIGIT}"
+
+        if self.command_type == CommandType.C_Minus1:
+            return f"{self.command_parameters['i']} {ASSIGNMENT} {self.command_parameters['j']} {MINUS} {ONE_DIGIT}"
+
+        if self.command_type == CommandType.C_Assume:
+            return f"assume {self.command_parameters['E']}"
+
+        if self.command_type == CommandType.C_Assert:
+            return f"assume {self.command_parameters['ORC']}"

@@ -8,3 +8,8 @@ MINUS = "-"
 EQUAL = "="
 NOT_EQUAL = "!="
 ONE_DIGIT = "1"
+EVEN = 'EVEN'
+ODD = 'ODD'
+SUM = 'SUM'
+TRUE_STRING = 'TRUE'
+FALSE_STRING = 'FALSE'
