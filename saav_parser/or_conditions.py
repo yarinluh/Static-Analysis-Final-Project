@@ -1,5 +1,5 @@
 from typing import List
-from and_conditions import ANDCondition
+from saav_parser.and_conditions import ANDCondition
 
 class ORCondition:
     def __init__(self, orcondition_text: str):

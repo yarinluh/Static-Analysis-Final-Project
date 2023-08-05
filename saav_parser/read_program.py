@@ -1,7 +1,7 @@
-from commands_part1 import Command
-from constants import *
 from typing import List
 from pathlib import Path
+
+from saav_parser.commands_part1 import Command
 
 class ProgramLine:
     def __init__(self, line_text: str):
@@ -35,10 +35,3 @@ class Program:
         for program_line in self.program_lines:
             s += f"\n{program_line}"
         return s
-
-
-# c = Command("assert (EVEN b  ODD c)   (EVEN x1  EVEN x2  ODD x3)")
-# print(c)
-
-p = Program('parser\example_program.txt')
-print(p)

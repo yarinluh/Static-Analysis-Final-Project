@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import List
-from e_conditions import ECondition
-from or_conditions import ORCondition
-from constants import *
+from saav_parser.e_conditions import ECondition
+from saav_parser.or_conditions import ORCondition
+from saav_parser.constants import *
 
 class CommandType(Enum):
     C_Skip = 1

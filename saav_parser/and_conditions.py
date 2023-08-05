@@ -1,5 +1,5 @@
 from typing import List
-from bool_conditions import BOOLCondition
+from saav_parser.bool_conditions import BOOLCondition
 
 class ANDCondition:
     def __init__(self, andcondition_text: str):

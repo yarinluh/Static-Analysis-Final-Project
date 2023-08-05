@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List
-from constants import *
+from saav_parser.constants import *
 
 class BoolConditionType(Enum):
     B_Even = 1
