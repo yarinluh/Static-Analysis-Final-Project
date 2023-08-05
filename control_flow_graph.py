@@ -1,5 +1,6 @@
 from saav_parser import Program, ProgramLine
-from typing import List
+from concrete_state import ConcreteState
+from typing import List, Union
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -47,4 +48,38 @@ class ControlFlowGraph:
                 return node
         raise SyntaxError("Could not find a starting label!")
 
-# def run_cfg() -> ConcreteState:
+    def run_cfg(self):
+        current_node: int = self.find_start_label()
+        current_state: ConcreteState = ConcreteState()
+        sucess: bool = False
+
+        while True:
+            outgoing_lines: List[ProgramLine] = self.outgoing_edges(current_node)
+            if len(outgoing_lines) == 0:
+                sucess = True
+                break
+            
+            possible_lines: List[ProgramLine] = [line for line in outgoing_lines
+                                                 if current_state.is_possible_to_execute_command(line.command)]
+            if len(possible_lines) == 0:
+                raise RuntimeError(f"There is no way to advance from L{current_node} when the state is: {current_state}.")
+            if len(possible_lines) >= 2:
+                raise RuntimeError(f"There is more than one way to advance from L{current_node}, \
+                                   when the state is: {current_state}.")
+            
+            line_to_take: ProgramLine = possible_lines[0]
+            print(f"Performing {line_to_take} \n\ton state: {current_state}\n")
+
+            next_state: Union[None, current_state] = current_state.execute_command_from_state(line_to_take.command)
+            if next_state is None:
+                sucess = False
+                break
+            
+            current_node = line_to_take.end_label
+            current_state = next_state
+
+        if not sucess:
+            print(f"The assertion {line_to_take.command} was failed on state: {current_state}.")
+        else:
+            print(f"SUCESS! Reached an ending line with the state: {current_state}.")
+        

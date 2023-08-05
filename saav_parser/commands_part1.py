@@ -85,7 +85,7 @@ class Command:
 
         if self.command_type == CommandType.C_Assign_Const:
             return {"i": self.command_text[0],
-                    "K": self.command_text[2]}
+                    "K": int(self.command_text[2])}
 
         if self.command_type == CommandType.C_Assign_Unknown:
             return {"i": self.command_text[0]}
@@ -102,8 +102,8 @@ class Command:
             return {"E": ECondition(econdition_text=self.command_text[1:])}
 
         if self.command_type == CommandType.C_Assert:
-            return {"ORC": ORCondition(orcondition_text=' '.join(self.command_text[1:]))}     
-        
+            return {"ORC": ORCondition(orcondition_text=' '.join(self.command_text[1:]))}
+
     def __repr__(self) -> str:
         if self.command_type == CommandType.C_Skip:
             return 'skip'

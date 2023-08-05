@@ -8,4 +8,4 @@ print(p)
 
 cfg = ControlFlowGraph(program=p)
 print(cfg.find_start_label())
-cfg.plot_graph()
+cfg.run_cfg()

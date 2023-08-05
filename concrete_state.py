@@ -29,6 +29,11 @@ class ConcreteState:
         new_state = ConcreteState()
         for v in VARIABLE_NAMES:
             new_state[v] = self[v]
+        return new_state
+
+    def __repr__(self):
+        mapping_for_print = {v: self.mapping[v] for v in VARIABLE_NAMES if self.mapping[v] != UNDEFINED}
+        return str(mapping_for_print)
 
     def evaluate_boolcondition(self, bool_condition: BOOLCondition) -> bool:
         if bool_condition.boolcondition_type == BoolConditionType.B_Even:
@@ -47,7 +52,7 @@ class ConcreteState:
     def evaluate_orcondition(self, or_condition: ORCondition) -> bool:
         return any([self.evaluate_andcondition(a) for a in or_condition.disjunction_list])
     
-    def evalute_econdition(self, e_condition: ECondition) -> bool:
+    def evaluate_econdition(self, e_condition: ECondition) -> bool:
         if e_condition.econdition_type == EConditionType.E_Equal_Var:
             i_variable = e_condition.econdition_parameters['i']
             i_value = self[i_variable]
@@ -86,7 +91,7 @@ class ConcreteState:
             command.command_type == CommandType.C_Minus1:
             j_variable = command.command_parameters['j']
             j_value = self[j_variable]
-            return j_value not in {UNDEFINED, UNKNOWN}
+            return isinstance(j_value, int)
                             
         if command.command_type == CommandType.C_Assume:    # assume E
             e_condition: ECondition = command.command_parameters['E']
@@ -135,7 +140,7 @@ class ConcreteState:
         if command.command_type == CommandType.C_Assume:    # assume E
             pass
         
-        if self.command_type == CommandType.C_Assert:    # assert ORC
+        if command.command_type == CommandType.C_Assert:    # assert ORC
             or_condition: ORCondition = command.command_parameters['ORC']
             if self.evaluate_orcondition(or_condition) == False:
                 return None
