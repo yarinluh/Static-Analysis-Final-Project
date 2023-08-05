@@ -1,0 +1,4 @@
+n i j
+L0 n := ? L1
+L1   assert (EVEN b  ODD c)   (EVEN x1  EVEN x2  ODD x3)   L55
+L542  assume i = 22  L2
