@@ -10,12 +10,15 @@ class ProgramLine:
         end_label = splitted_line[-1]
         if start_label[0] != "L" or not start_label[1:].isdigit() or \
              end_label[0] != "L" or not end_label[1:].isdigit():
-            raise SyntaxError("Line does not start or ends with a labal!")
+            raise SyntaxError(f"Line does not start or ends with a labal: {line_text}.")
         self.start_label: int = int(start_label[1:])
         self.end_label: int = int(end_label[1:])
 
         command_text = line_text[len(start_label): -len(end_label)].strip()
         self.command: Command = Command(command_text)
+
+    def get_edge_label(self) -> tuple:
+        return f"L{self.start_label}", f"L{self.end_label}"
 
     def __repr__(self) -> str:
         return f"L{self.start_label}   {self.command}   L{self.end_label}"
@@ -29,6 +32,13 @@ class Program:
 
         self.program_variables: List[str] = lines[0].split(' ')
         self.program_lines: List[ProgramLine] = [ProgramLine(line) for line in lines[1:]]
+
+    def get_all_labels(self) -> List[int]:
+        all_labels_set: set = set()
+        for program_line in self.program_lines:
+            all_labels_set.add(program_line.start_label)
+            all_labels_set.add(program_line.end_label)
+        return sorted(all_labels_set)
 
     def __repr__(self) -> str:
         s = ' '.join(self.program_variables) + "\n"
