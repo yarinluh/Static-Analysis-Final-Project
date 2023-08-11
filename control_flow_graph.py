@@ -73,7 +73,7 @@ class ControlFlowGraph:
             line_to_take: ProgramLine = possible_lines[0]
             print(f"Performing {line_to_take} \n\ton state: {current_state}\n")
 
-            next_state: Union[None, current_state] = current_state.execute_command_from_state(line_to_take.command)
+            next_state: Union[None, current_state] = current_state.execute_command_from_concrete_state(line_to_take.command)
             if next_state is None:
                 failed_assertion = True
                 break
