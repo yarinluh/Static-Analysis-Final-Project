@@ -18,7 +18,7 @@ class PL(Enum):
             return True
         if el1 == PL.Bottom:
             return True
-        return False
+        return el1 == el2
     
     def meet(el1,el2):
         if PL.leq(el1,el2):
@@ -49,10 +49,10 @@ def create_cartesian_product_lattice(variables, lattice_class):
             self.index_of_variables = {v: i for i, v in enumerate(variables)}
 
         def top():
-            return tuple(lattice_class.top() for _ in variables)
+            return cartesian_prodcut(tuple(lattice_class.top() for _ in variables))
         
         def bottom():
-            return tuple(lattice_class.bottom() for _ in variables)
+            return cartesian_prodcut(tuple(lattice_class.bottom() for _ in variables))
         
         def __getitem__(self, variable):
             index_of_variable = self.index_of_variables[variable]
@@ -132,7 +132,7 @@ def create_disjunctive_completion_lattice(lattice_class):
             return self.set.__repr__()
         
         def __copy__(self):
-            return {s.__copy__() for s in self.set}
+            return disjunctive_completion({s.__copy__() for s in self.set})
         
         def all_elements():
             res = [set()] 

@@ -57,12 +57,12 @@ def evaluate_boolcondition_on_cartesian(bool_condition: BOOLCondition, cartesian
     if bool_condition.boolcondition_type == BoolConditionType.B_Even:
             i_variable = bool_condition.boolcondition_parameters['i']
             i_value = cartesian[i_variable]
-            return ParityLattice.Even <= i_value
+            return i_value != ParityLattice.Odd
         
     if bool_condition.boolcondition_type == BoolConditionType.B_Odd:
         i_variable = bool_condition.boolcondition_parameters['i']
         i_value = cartesian[i_variable]
-        return ParityLattice.Odd <= i_value
+        return i_value != ParityLattice.Even
 
 def evaluate_andcondition_on_cartesian(and_condition: ANDCondition, cartesian: ParityCartesianProductLattice) -> bool:
     return all([evaluate_boolcondition_on_cartesian(b, cartesian) for b in and_condition.conjunction_list])
@@ -135,10 +135,12 @@ def execute_command_from_abstract_state(current_state: ParityRelationalProductLa
     return ParityRelationalProductLattice(set=new_set)
 
 command_texts = [
-    'x := z',
-    'y := 5',
-    'z := y + 1',
-    'assert (EVEN x)'
+    'z := ?',
+    'x := 0',
+    'assume x = 0',
+    'assume y = 0',
+    'assume x = z',
+    'assert (EVEN x  ODD y) (ODD x  ODD y)'
 ]
 for command_text in command_texts:
     print("\n===================================================\n")
