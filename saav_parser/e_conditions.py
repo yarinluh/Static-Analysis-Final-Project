@@ -59,7 +59,7 @@ class ECondition:
         if self.econdition_type == EConditionType.E_Equal_Const or \
             self.econdition_type == EConditionType.E_Diff_Const:
             return {"i": self.econdition_text[0],
-                    "K": self.econdition_text[2]}
+                    "K": int(self.econdition_text[2])}
         
         if self.econdition_type == EConditionType.E_True or \
             self.econdition_type == EConditionType.E_False:

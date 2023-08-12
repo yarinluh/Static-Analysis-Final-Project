@@ -99,7 +99,7 @@ class ConcreteState:
 
         return True
 
-    def execute_command_from_state(self, command: Command):
+    def execute_command_from_concrete_state(self, command: Command):
         new_state = self.__copy__()
 
         if command.command_type == CommandType.C_Skip:      # skip
