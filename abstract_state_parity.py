@@ -6,7 +6,7 @@ ParityLattice = PL
 ParityCartesianProductLattice = create_cartesian_product_lattice(['x', 'y', 'z'], ParityLattice)
 ParityRelationalProductLattice = create_relational_product_lattice(['x', 'y', 'z'], ParityLattice)
 
-current_state: ParityRelationalProductLattice = ParityRelationalProductLattice.top()
+
 
 def evaluate_econdition_on_cartesian(econdition: ECondition, cartesian: ParityCartesianProductLattice) -> bool:
     econdition_type: EConditionType = econdition.econdition_type
@@ -126,6 +126,7 @@ def execute_command_from_abstract_state(current_state: ParityRelationalProductLa
                 new_set.add(cartesian.__copy__())
             else:
                 new_set.add(ParityCartesianProductLattice.bottom())
+                # TODO should be changed to the ragular lattice - different design is required!
     
     if command.command_type == CommandType.C_Assert:    # assert ORC
         or_condition: ORCondition = command.command_parameters['ORC']
@@ -143,9 +144,11 @@ def example():
         'assume x = z',
         'assert (EVEN x  ODD y) (ODD x  ODD y)'
     ]
+    current_state: ParityRelationalProductLattice = ParityRelationalProductLattice.top()
     for command_text in command_texts:
         print("\n===================================================\n")
         print(f"Performing {command_text} on state: \t{current_state}.")
         current_state = execute_command_from_abstract_state(current_state, Command(command_text))
         print(f"\nGot {len(current_state.set)}-long state: \t{current_state}.")
         
+# example()

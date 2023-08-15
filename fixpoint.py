@@ -1,8 +1,8 @@
 from control_flow_graph import ControlFlowGraph
 import random
-from abstract_state import execute_command_from_abstract_state 
+from abstract_state_parity import execute_command_from_abstract_state 
 
-def vanilla_fixpoint(cfg,lattice_class):
+def vanilla_fixpoint(cfg, lattice_class):
     #HERE I WOULD LIKE TO ADD THE TYPE OF ANALYSIS AS AN INPUT - A CLASS WITH THE INTERPRETATION OF EACH COMMAND
     nodes = cfg.nodes
     states_vector = [lattice_class.bottom() for node in nodes]
@@ -43,7 +43,7 @@ def update_node_state(cfg,states_vector,node,lattice_class):
             start = line.start_label
 
             print("\n",start,states_vector[start])
-            new_state = execute_command_from_abstract_state(states_vector[start],line.command)
+            new_state = execute_command_from_abstract_state(states_vector[start], line.command)
             
             print("\n",node,new_state)
             ingoing_states.append(new_state)
