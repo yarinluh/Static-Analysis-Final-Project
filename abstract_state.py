@@ -134,16 +134,18 @@ def execute_command_from_abstract_state(current_state: ParityRelationalProductLa
                         
     return ParityRelationalProductLattice(set=new_set)
 
-command_texts = [
-    'z := ?',
-    'x := 0',
-    'assume x = 0',
-    'assume y = 0',
-    'assume x = z',
-    'assert (EVEN x  ODD y) (ODD x  ODD y)'
-]
-for command_text in command_texts:
-    print("\n===================================================\n")
-    print(f"Performing {command_text} on state: \t{current_state}.")
-    current_state = execute_command_from_abstract_state(current_state, Command(command_text))
-    print(f"\nGot {len(current_state.set)}-long state: \t{current_state}.")
+def example():
+    command_texts = [
+        'z := ?',
+        'x := 0',
+        'assume x = 0',
+        'assume y = 0',
+        'assume x = z',
+        'assert (EVEN x  ODD y) (ODD x  ODD y)'
+    ]
+    for command_text in command_texts:
+        print("\n===================================================\n")
+        print(f"Performing {command_text} on state: \t{current_state}.")
+        current_state = execute_command_from_abstract_state(current_state, Command(command_text))
+        print(f"\nGot {len(current_state.set)}-long state: \t{current_state}.")
+        
