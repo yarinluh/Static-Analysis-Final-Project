@@ -1,16 +1,19 @@
 from saav_parser import Program
 from control_flow_graph import ControlFlowGraph
-from fixpoint import vanilla_fixpoint
-from parity_analysis import PL, create_relational_product_lattice
+from fixpoint import vanilla_fixpoint, chaotic_iteration
+from pathlib import Path
+from abstract_state_parity import ParityStaticAnalyzer
 
-p = Program('.\example_program.txt')
+path_to_program: Path = Path('.\example_program.txt')
+p = Program(path_to_program)
 #print(p)
 
 cfg = ControlFlowGraph(program=p)
 #cfg.run_cfg()
 #cfg.plot_graph()
 
-lattice = create_relational_product_lattice(['n', 'i', 'j'], PL)
+parity_analyzer: ParityStaticAnalyzer = ParityStaticAnalyzer(variables=['n', 'i', 'j'])
 
-vanilla_fixpoint(cfg, lattice)
+# vanilla_fixpoint(cfg, parity_analyzer)
+chaotic_iteration(cfg, parity_analyzer)
 #Currently doesn't work because of a bug in abstract state
