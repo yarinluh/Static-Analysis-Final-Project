@@ -63,7 +63,7 @@ class ParityStaticAnalyzer:
             return False
         
         raise ValueError(f"Ilegal econdition: {econdition}.")
-
+    
     def _evaluate_boolcondition_on_cartesian(self, bool_condition: BOOLCondition, cartesian) -> bool:
         assert isinstance(cartesian, self.tuple_class)
         boolcondition_type: BoolConditionType = bool_condition.boolcondition_type
@@ -90,23 +90,18 @@ class ParityStaticAnalyzer:
                 return True
         return False
 
-class ParityAbstractState:
-    def __init__(self, parity_static_analyzer: ParityStaticAnalyzer, state: ListableLattice):
-        self.parity_static_analyzer: ParityStaticAnalyzer = parity_static_analyzer
-        self.lattice_class: Type[ListableLattice] = parity_static_analyzer.tuple_subsets_lattice_class
-        self.state: ListableLattice = state
-
-    def execute_command_from_abstract_state(self, command: Command) -> ParityAbstractState:
+    def execute_command_from_abstract_state(self, current_state, command: Command):
+        assert isinstance(current_state, self.tuple_subsets_lattice_class)
         command_type: CommandType = command.command_type
         new_set: Set[Listable] = set()
 
         if command_type == CommandType.C_Skip:
-            return ParityAbstractState(self.parity_static_analyzer, self.state.copy())
+            return current_state.copy()
 
         if command.command_type == CommandType.C_Assign_Var:    # i := j
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
-            for cartesian in self.state:
+            for cartesian in current_state:
                 j_value = cartesian[j_variable]
                 new_cartesian = cartesian.copy()
                 new_cartesian[i_variable] = j_value
@@ -116,14 +111,14 @@ class ParityAbstractState:
             i_variable = command.command_parameters['i']
             const = command.command_parameters['K']
             parity = Parity.EVEN if const % 2 == 0 else Parity.ODD
-            for cartesian in self.state:
+            for cartesian in current_state:
                 new_cartesian = cartesian.copy()
                 new_cartesian[i_variable] = parity
                 new_set.add(new_cartesian)
         
         if command.command_type == CommandType.C_Assign_Unknown:    # i := ?
             i_variable = command.command_parameters['i']
-            for cartesian in self.state:
+            for cartesian in current_state:
                 new_cartesian = cartesian.copy()
                 new_cartesian[i_variable] = Parity.EVEN
                 new_set.add(new_cartesian)
@@ -135,7 +130,7 @@ class ParityAbstractState:
             command.command_type == CommandType.C_Minus1:    # i = j +- 1
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
-            for cartesian in self.state:
+            for cartesian in current_state:
                 j_value = cartesian[j_variable]
                 updated_j_value = Parity.EVEN if j_value == Parity.ODD else Parity.ODD
                 new_cartesian = cartesian.copy()
@@ -144,21 +139,18 @@ class ParityAbstractState:
         
         if command.command_type == CommandType.C_Assume:    # assume E
             e_condition: ECondition = command.command_parameters['E']
-            for cartesian in self.state:
-                if self.parity_static_analyzer._evaluate_econdition_on_cartesian(e_condition, cartesian):
+            for cartesian in current_state:
+                if self._evaluate_econdition_on_cartesian(e_condition, cartesian):
                     new_set.add(cartesian.copy())
         
         if command.command_type == CommandType.C_Assert:    # assert ORC
             or_condition: ORCondition = command.command_parameters['ORC']
-            for cartesian in self.state:
-                if not self.parity_static_analyzer._evaluate_orcondition_on_cartesian(or_condition, cartesian):
+            for cartesian in current_state:
+                if not self._evaluate_orcondition_on_cartesian(or_condition, cartesian):
                     print(f"Assertaion {or_condition} failted due to: {cartesian}.")
-            return ParityAbstractState(self.parity_static_analyzer, self.state.copy())
+            return current_state.copy()
                             
-        return ParityAbstractState(self.parity_static_analyzer, state=self.lattice_class(set=new_set))    
-    
-    def __repr__(self) -> str:
-        return self.state.set.__repr__()
+        return self.tuple_subsets_lattice_class(set=new_set) # type: ignore
 
 
 def example():
@@ -172,12 +164,12 @@ def example():
     ]
 
     parity_analyzer: ParityStaticAnalyzer = ParityStaticAnalyzer(variables=['x', 'y', 'z'])
-    current_state: ParityAbstractState = ParityAbstractState(parity_analyzer, parity_analyzer.tuple_subsets_lattice_class.top()) # type: ignore
+    current_state = parity_analyzer.tuple_subsets_lattice_class.top()
 
     for command_text in command_texts:
         print("\n===================================================\n")
         print(f"Performing {command_text} on state: \t{current_state}.")
-        current_state = current_state.execute_command_from_abstract_state(command=Command(command_text))
-        print(f"\nGot {len(current_state.state.set)}-long state: \t{current_state}.")
+        current_state = parity_analyzer.execute_command_from_abstract_state(current_state, Command(command_text))
+        print(f"\nGot {len(current_state.set)}-long state: \t{current_state}.")
         
-example()
+# example()
