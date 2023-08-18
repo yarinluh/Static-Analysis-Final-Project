@@ -64,6 +64,8 @@ class ECondition:
         if self.econdition_type == EConditionType.E_True or \
             self.econdition_type == EConditionType.E_False:
             return {}
+        
+        raise SyntaxError(f"Ilegal ECondition: {self.econdition_text}!")
 
     def __repr__(self) -> str:
         if self.econdition_type == EConditionType.E_Equal_Var:
@@ -83,3 +85,5 @@ class ECondition:
 
         if self.econdition_type == EConditionType.E_False:
             return FALSE_STRING
+        
+        raise SyntaxError(f"Ilegal ECondition: {self.econdition_text}!")
