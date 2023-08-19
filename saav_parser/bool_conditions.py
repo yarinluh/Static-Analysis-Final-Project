@@ -31,6 +31,9 @@ class BOOLCondition:
         
         if self.boolcondition_type == BoolConditionType.B_Odd:
             return {"i": self.boolcondition_text[1]}
+        
+        raise SyntaxError(f"Ilegal BOOLCondition: {self.boolcondition_text}.")
+
 
     def __repr__(self) -> str:
         if self.boolcondition_type == BoolConditionType.B_Even:
@@ -38,3 +41,5 @@ class BOOLCondition:
         
         if self.boolcondition_type == BoolConditionType.B_Odd:
             return f"{ODD} {self.boolcondition_parameters['i']}"
+        
+        raise SyntaxError(f"Ilegal BOOLCondition: {self.boolcondition_text}.")
