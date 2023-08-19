@@ -63,14 +63,20 @@ class SummationStaticAnalyzer:
         self.variables: List[str] = variables
         self.lattice_class: Type[ItemableLattice] = create_cartesian_product_lattice(variables, AvailableExpression)
 
-    def _evaluate_econdition_on_cartesian(self, econdition: ECondition, cartesian) -> bool:
+    def _evaluate_econdition_on_cartesian(self, econdition: ECondition, cartesian):
         assert isinstance(cartesian, self.lattice_class)
         econdition_type: EConditionType = econdition.econdition_type
 
-        if econdition_type in {EConditionType.E_Equal_Var, EConditionType.E_Diff_Var}:  # i = j; i != j
+        if econdition_type  == EConditionType.E_Equal_Var:      # i = j
+            pass
+
+        if econdition_type == EConditionType.E_Diff_Var:        # i != j
             pass
         
-        if econdition_type in {EConditionType.E_Equal_Const, EConditionType.E_Diff_Const}:  # i = K; i != K
+        if econdition_type == EConditionType.E_Equal_Const:     # i = K
+            pass
+
+        if econdition_type == EConditionType.E_Diff_Const:      # i != K
             pass
         
         if econdition_type == EConditionType.E_True:
