@@ -5,6 +5,7 @@ from saav_parser.constants import *
 class BoolConditionType(Enum):
     B_Even = 1
     B_Odd = 2
+    B_Sum = 3
 
 class BOOLCondition:
     def __init__(self, boolcondition_text: str):
