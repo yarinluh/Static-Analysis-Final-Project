@@ -172,4 +172,4 @@ def example():
         current_state = parity_analyzer.execute_command_from_abstract_state(current_state, Command(command_text))
         print(f"\nGot {len(current_state.set)}-long state: \t{current_state}.")
         
-# example()
+#example()
