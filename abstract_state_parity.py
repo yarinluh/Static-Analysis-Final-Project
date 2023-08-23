@@ -39,22 +39,26 @@ class ParityStaticAnalyzer:
         assert isinstance(cartesian, self.tuple_class)
         econdition_type: EConditionType = econdition.econdition_type
 
-        if econdition_type in {EConditionType.E_Equal_Var, EConditionType.E_Diff_Var}:  # i = j; i != j
+        if econdition_type == EConditionType.E_Equal_Var:  # i = j
             i_variable = econdition.econdition_parameters['i']
             i_value = cartesian[i_variable]
             j_variable = econdition.econdition_parameters['j']
             j_value = cartesian[j_variable]
-            return (econdition_type == EConditionType.E_Equal_Var and i_value == j_value) or \
-                   (econdition_type == EConditionType.E_Diff_Var and i_value != j_value)
+            return i_value == j_value
+        
+        if econdition_type == EConditionType.E_Diff_Var:   #i != j
+            return True
         
         
-        if econdition_type in {EConditionType.E_Equal_Const, EConditionType.E_Diff_Const}:  # i = K; i != K
+        if econdition_type == EConditionType.E_Equal_Const:  # i = K
             i_variable = econdition.econdition_parameters['i']
             i_value = cartesian[i_variable]
             K_value = econdition.econdition_parameters['K']
             parity = Parity.EVEN if K_value % 2 == 0 else Parity.ODD
-            return (econdition_type == EConditionType.E_Equal_Const and i_value == parity) or \
-                   (econdition_type == EConditionType.E_Diff_Const and i_value != parity)
+            return i_value == parity
+        
+        if econdition_type == EConditionType.E_Diff_Const:   # i != K
+            return True
         
         if econdition_type == EConditionType.E_True:
             return True

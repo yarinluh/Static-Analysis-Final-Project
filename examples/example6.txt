@@ -1,6 +1,6 @@
 n m i j
 
-L0   n = ?   L1
+L0   n := ?   L1
 L1   m := 0   L2
 L2   i := 0   L3
 L3   assume i != n  L4
