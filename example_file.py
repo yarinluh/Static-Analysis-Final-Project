@@ -12,7 +12,7 @@ def example1():
 
     parity_analyzer: ParityStaticAnalyzer = ParityStaticAnalyzer(variables=['n', 'i', 'j'])
 
-    vanilla_fixpoint(cfg, parity_analyzer)
+    # vanilla_fixpoint(cfg, parity_analyzer)
     chaotic_iteration(cfg, parity_analyzer)
 
 def example2():
@@ -67,5 +67,5 @@ def example6():
 
     chaotic_iteration(cfg, parity_analyzer)
 
-
+print("Started!")
 example6()
