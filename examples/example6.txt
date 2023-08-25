@@ -1,0 +1,15 @@
+n m i j
+
+L0   n := ?   L1
+L1   m := 0   L2
+L2   i := 0   L3
+L3   assume i != n  L4
+L4   j := 1  L5
+L5   assume j != n L6
+L6   m := m + 1  L7
+L7   j := j + 1  L5
+L5   assume j = n  L8
+L8   i := i + 1 L3
+L3   assume i = n  L9
+L9   assert (EVEN m)  L10
+

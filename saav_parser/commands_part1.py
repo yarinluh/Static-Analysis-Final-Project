@@ -130,6 +130,6 @@ class Command:
             return f"assume {self.command_parameters['E']}"
 
         if self.command_type == CommandType.C_Assert:
-            return f"assume {self.command_parameters['ORC']}"
+            return f"assert {self.command_parameters['ORC']}"
         
         raise SyntaxError(f"Ilegal Command: {self.command_text}.")
