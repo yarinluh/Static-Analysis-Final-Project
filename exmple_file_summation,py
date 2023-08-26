@@ -1,0 +1,31 @@
+from pathlib import Path
+from saav_parser import Program
+from control_flow_graph import ControlFlowGraph
+from abstract_state_summation import SummationStaticAnalyzer
+from fixpoint import chaotic_iteration
+
+def example1():
+    path_to_program: Path = Path('examples_summation\example1.txt')
+    p = Program(path_to_program)
+
+    cfg = ControlFlowGraph(program=p)
+
+    summation_analyser: SummationStaticAnalyzer = SummationStaticAnalyzer(variables=p.program_variables,
+                                                                          maximal_absolute_value_of_integer=6)
+
+    # vanilla_fixpoint(cfg, parity_analyzer)
+    chaotic_iteration(cfg, summation_analyser)
+
+def example2():
+    path_to_program: Path = Path('examples_summation\example2.txt')
+    p = Program(path_to_program)
+
+    cfg = ControlFlowGraph(program=p)
+
+    summation_analyser: SummationStaticAnalyzer = SummationStaticAnalyzer(variables=p.program_variables,
+                                                                          maximal_absolute_value_of_integer=6)
+
+    # vanilla_fixpoint(cfg, parity_analyzer)
+    chaotic_iteration(cfg, summation_analyser) 
+
+example2()

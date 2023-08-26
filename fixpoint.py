@@ -3,9 +3,9 @@ import random
 
 def vanilla_fixpoint(cfg, analyzer):
     nodes = cfg.nodes
-    states_vector = [analyzer.tuple_subsets_lattice_class.bottom() for _ in nodes]
+    states_vector = [analyzer.lattice_class.bottom() for _ in nodes]
     start_node = cfg.find_start_label()
-    states_vector[start_node] = analyzer.tuple_subsets_lattice_class.top()
+    states_vector[start_node] = analyzer.lattice_class.top()
     iteration = 0
     while True:
         print("iteration",iteration)
@@ -21,9 +21,9 @@ def vanilla_fixpoint(cfg, analyzer):
 
 def chaotic_iteration(cfg, analyzer):
     nodes = cfg.nodes
-    states_vector = [analyzer.tuple_subsets_lattice_class.bottom() for _ in nodes]
+    states_vector = [analyzer.lattice_class.bottom() for _ in nodes]
     start_node = cfg.find_start_label()
-    states_vector[start_node] = analyzer.tuple_subsets_lattice_class.top()
+    states_vector[start_node] = analyzer.lattice_class.top()
     worklist = set(nodes)
     iteration = 0
     while worklist:
@@ -52,7 +52,7 @@ def update_node_state(cfg, states_vector, node, analyzer):
             
             print("\n",node,new_state)
             ingoing_states.append(new_state)
-        new_state_for_node = analyzer.tuple_subsets_lattice_class.join_list(ingoing_states)
+        new_state_for_node = analyzer.lattice_class.join_list(ingoing_states)
         if len(ingoing_edges) > 1:
             print("\n","join_result for",node,new_state_for_node)
         new_vector[node] = new_state_for_node

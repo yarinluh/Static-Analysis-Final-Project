@@ -9,7 +9,7 @@ def create_available_expressions_lattice(variables: List[str], maximal_absolute_
     MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER: int = maximal_absolute_value_of_integer
     TOP_SET = {AvailableExpression(result_variable=result_variable, variable=variable, integer=integer) \
                             for result_variable in ALL_VARIABLES \
-                            for variable in ALL_VARIABLES \
+                            for variable in ALL_VARIABLES + [None] \
                             for integer in range(-MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER, MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER+1)}
 
     class AELattice(Lattice):
@@ -79,7 +79,7 @@ class SummationStaticAnalyzer:
             new_set.add(AvailableExpression(i_variable, j_variable, 0))
 
         elif econdition_type == EConditionType.E_Diff_Var:        # i != j
-            pass
+            pass  # TODO can be done better?
         
         elif econdition_type == EConditionType.E_Equal_Const:     # i = K
             i_variable = econdition.econdition_parameters['i']
@@ -166,12 +166,13 @@ class SummationStaticAnalyzer:
         
         if command.command_type == CommandType.C_Assert:    # assert ORC
             or_condition: ORCondition = command.command_parameters['ORC']
+            solution_without_sigma = solve_linear_equations(self.variables, new_set, [])[0]
+            print(f"Got the following solutions: {solution_without_sigma}.")
             if not self._evaluate_orcondition_on_set(or_condition, new_set):
-                solution_without_sigma = solve_linear_equations(self.variables, new_set, [])[0]
-                print(f"Assretion {or_condition} failed!\nGot the following solutions: {solution_without_sigma}.")
+                print(f"Assretion {or_condition} failed!")
         
         # Finally - we explicate and inform the user if he should try with a different number.
-        new_set = explicate_set(new_set)
+        new_set = explicate_set(new_set, maximal_integer=self.maximal_absolute_value_of_integer)
         for integer in {expression.integer for expression in new_set}:
             if abs(integer) > self.maximal_absolute_value_of_integer:
                 information = \

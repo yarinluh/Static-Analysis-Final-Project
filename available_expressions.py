@@ -68,7 +68,7 @@ def solve_linear_equations(variables: List[str], set_of_expressions: Set[Availab
     solution = solution[0]
     if variables_to_sum == []:
         return solution, None
-    return solution[0], solution[0][sigma]
+    return solution, solution[sigma]
 
 def solving_example():
     ae1 = AvailableExpression("x", "y", 1)
@@ -91,7 +91,7 @@ def clean_variable_from_set(variable: str, set_to_clean: Set[AvailableExpression
             new_set.remove(expression)
     return new_set
 
-def explicate_set(set_of_expressions: Set[AvailableExpression]):
+def explicate_set(set_of_expressions: Set[AvailableExpression], maximal_integer: int):
     """
     The method is given a set of expressions of the form x = y + m.
     For each two expressions that answers the pattern (x = y + n) and (y = z + m),
@@ -107,11 +107,15 @@ def explicate_set(set_of_expressions: Set[AvailableExpression]):
             z = second_expression.variable
             n = first_expression.integer
             m = second_expression.integer
+            if (x == z) or (y == z) or (x == y):  # to avoid infinite loop
+                continue
+            if abs(m+n) > maximal_integer:
+                continue
             new_set.add(AvailableExpression(result_variable=x, variable=z, integer=(m+n)))
 
     if new_set == set_of_expressions:
         return new_set
-    return explicate_set(new_set)
+    return explicate_set(new_set, maximal_integer)
 
 def aux_examples():
     ae1 = AvailableExpression("a", "b", 1)

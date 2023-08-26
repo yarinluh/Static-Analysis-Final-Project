@@ -33,7 +33,7 @@ class ParityStaticAnalyzer:
     def __init__(self, variables: List[str]):
         self.variables: List[str] = variables
         self.tuple_class: Type[ListableItemable] = create_tuple_class(variables, Parity)
-        self.tuple_subsets_lattice_class: Type[ListableLattice] = create_disjunctive_completion_lattice(self.tuple_class)
+        self.lattice_class: Type[ListableLattice] = create_disjunctive_completion_lattice(self.tuple_class)
 
     def _evaluate_econdition_on_cartesian(self, econdition: ECondition, cartesian) -> bool:
         assert isinstance(cartesian, self.tuple_class)
@@ -95,7 +95,7 @@ class ParityStaticAnalyzer:
         return False
 
     def execute_command_from_abstract_state(self, current_state, command: Command):
-        assert isinstance(current_state, self.tuple_subsets_lattice_class)
+        assert isinstance(current_state, self.lattice_class)
         command_type: CommandType = command.command_type
         new_set: Set[Listable] = set()
 
@@ -154,7 +154,7 @@ class ParityStaticAnalyzer:
                     print(f"Assertaion {or_condition} failted due to: {cartesian}.")
             return current_state.copy()
                             
-        return self.tuple_subsets_lattice_class(set=new_set) # type: ignore
+        return self.lattice_class(set=new_set) # type: ignore
 
 
 def example():
@@ -168,7 +168,7 @@ def example():
     ]
 
     parity_analyzer: ParityStaticAnalyzer = ParityStaticAnalyzer(variables=['x', 'y', 'z'])
-    current_state = parity_analyzer.tuple_subsets_lattice_class.top()
+    current_state = parity_analyzer.lattice_class.top()
 
     for command_text in command_texts:
         print("\n===================================================\n")
