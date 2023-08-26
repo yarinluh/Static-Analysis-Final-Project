@@ -2,49 +2,15 @@ from __future__ import annotations
 from lattice_creation import Lattice, create_cartesian_product_lattice, ItemableLattice
 from typing import Union, Type, List, Set, Iterator
 from saav_parser import ECondition, EConditionType, BOOLCondition, BoolConditionType, ANDCondition, ORCondition, Command, CommandType
+from available_expressions import AvailableExpression, solve_linear_equations, explicate_set, clean_variable_from_set
 
-class AvailableExpression:
-    """
-    Represents an expression of the form x = y + m, where:
-    x is a variable,
-    y is either a variable or None (if x is a constanct, in that case the expression is simple x = m),
-    m is an integer,
-    """
-    def __init__(self, result_variable: str, variable: Union[str, None], integer: int):
-        self.result_variable = result_variable
-        self.variable = variable
-        self.integer = integer
-    
-    def __eq__(self: AvailableExpression, other: AvailableExpression) -> bool:
-        return self.result_variable == other.result_variable \
-            and self.variable == other.variable \
-            and self.integer == other.integer
-                
-    def __repr__(self) -> str:
-        s = f"{self.result_variable} = "
-        if self.variable is not None:
-            s += f"{self.variable} "
-            s += f"+ {self.integer}" if self.integer >=0 else f"- {-self.integer}"
-        else:
-            s += f"{self.integer}"
-        return s
-    
-    def __hash__(self) -> int:
-        return hash(self.__repr__())
-    
-    def copy(self) -> AvailableExpression:
-        return AvailableExpression(result_variable=self.result_variable,
-                                   variable=self.variable,
-                                   integer=self.integer)
-
-def create_available_expressions_lattice(variables: Set[str], maximal_absolute_value_of_integer: int) -> Type[Lattice]:
-    ALL_VARIABLES: Set[str] = variables
+def create_available_expressions_lattice(variables: List[str], maximal_absolute_value_of_integer: int) -> Type[Lattice]:
+    ALL_VARIABLES: List[str] = variables
     MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER: int = maximal_absolute_value_of_integer
     TOP_SET = {AvailableExpression(result_variable=result_variable, variable=variable, integer=integer) \
                             for result_variable in ALL_VARIABLES \
                             for variable in ALL_VARIABLES \
-                            for integer in range(-MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER, MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER+1) \
-                                if result_variable != variable}
+                            for integer in range(-MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER, MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER+1)}
 
     class AELattice(Lattice):
         def __init__(self, expressions_set: Set[AvailableExpression]):
@@ -97,99 +63,64 @@ def ae_exmple():
     print(len(b))
 
 
-def clean_variable_from_set(variable: str, set_to_clean: Set[AvailableExpression]):
-    """
-    Given a set of avilable expressions of the form x = y + m, and a variable r,
-    this method cleans from the set expressions that are no longer valid due to change in the value of r,
-    meaning expression in which x == r or y == r.
-    """
-    new_set: Set[AvailableExpression] = set_to_clean.copy()
-    for expression in set_to_clean:
-        if expression.result_variable == variable or expression.variable == variable:
-            new_set.remove(expression)
-    return new_set
-
-def explicate_set(set_of_expressions: Set[AvailableExpression]):
-    """
-    The method is given a set of expressions of the form x = y + m.
-    For each two expressions that answers the pattern (x = y + n) and (y = z + m),
-    the method adds a new expression: (x = z + (m+n)).
-    """
-    new_set: Set[AvailableExpression] = set_of_expressions.copy()
-    for first_expression in set_of_expressions:
-        x = first_expression.result_variable
-        y = first_expression.variable
-        for second_expression in set_of_expressions:
-            if second_expression.result_variable != y:
-                continue
-            z = second_expression.variable
-            n = first_expression.integer
-            m = second_expression.integer
-            new_set.add(AvailableExpression(result_variable=x, variable=z, integer=(m+n)))
-    return new_set
-
-def aux_examples():
-    ae1 = AvailableExpression("x", "y", 1)
-    ae2 = AvailableExpression("y", "z", -15)
-    ae3 = AvailableExpression("x", None, 5)
-    ae4 = AvailableExpression("r", "x", 0)
-
-    s = {ae1, ae2, ae3, ae4}
-    print(s)
-    # new_s = explicate_set(s)
-    new_s = clean_variable_from_set("x", s)
-    print(new_s)
-
 class SummationStaticAnalyzer:
-    def __init__(self, variables: Set[str], maximal_absolute_value_of_integer: int):
-        self.variables: Set[str] = variables
+    def __init__(self, variables: List[str], maximal_absolute_value_of_integer: int):
+        self.variables: List[str] = variables
         self.maximal_absolute_value_of_integer = maximal_absolute_value_of_integer
         self.lattice_class: Type[Lattice] = create_available_expressions_lattice(self.variables, maximal_absolute_value_of_integer)
 
-    def _evaluate_econdition_on_cartesian(self, econdition: ECondition, cartesian):
-        assert isinstance(cartesian, self.lattice_class)
+    def _evaluate_econdition_on_set(self, econdition: ECondition, set_of_expressions: Set[AvailableExpression]) -> Set[AvailableExpression]:
         econdition_type: EConditionType = econdition.econdition_type
+        new_set: Set[AvailableExpression] = set_of_expressions.copy()
 
         if econdition_type  == EConditionType.E_Equal_Var:      # i = j
-            pass
+            i_variable = econdition.econdition_parameters['i']
+            j_variable = econdition.econdition_parameters['j']
+            new_set.add(AvailableExpression(i_variable, j_variable, 0))
 
-        if econdition_type == EConditionType.E_Diff_Var:        # i != j
+        elif econdition_type == EConditionType.E_Diff_Var:        # i != j
             pass
         
-        if econdition_type == EConditionType.E_Equal_Const:     # i = K
-            pass
+        elif econdition_type == EConditionType.E_Equal_Const:     # i = K
+            i_variable = econdition.econdition_parameters['i']
+            K_value = econdition.econdition_parameters['K']
+            new_set.add(AvailableExpression(i_variable, None, K_value))
 
-        if econdition_type == EConditionType.E_Diff_Const:      # i != K
+        elif econdition_type == EConditionType.E_Diff_Const:      # i != K
             pass
         
-        if econdition_type == EConditionType.E_True:
+        elif econdition_type == EConditionType.E_True:
             pass
         
-        if econdition_type == EConditionType.E_False:
-            pass
+        elif econdition_type == EConditionType.E_False:
+            new_set = self.lattice_class.bottom().expressions_set
         
-        raise ValueError(f"Ilegal econdition: {econdition}.")
+        else:
+            raise ValueError(f"Ilegal econdition: {econdition}.")
+        
+        return new_set
     
-    def _evaluate_boolcondition_on_cartesian(self, bool_condition: BOOLCondition, cartesian) -> bool:
-        assert isinstance(cartesian, self.lattice_class)
+    def _evaluate_boolcondition_on_set(self, bool_condition: BOOLCondition, set_of_expressions: Set[AvailableExpression]) -> bool:
         boolcondition_type: BoolConditionType = bool_condition.boolcondition_type
 
         if boolcondition_type == BoolConditionType.B_Sum:
-            pass
+            i_vec: List[str] = bool_condition.boolcondition_parameters['i_vec']
+            j_vec: List[str] = bool_condition.boolcondition_parameters['j_vec']
+            i_vec_sum = solve_linear_equations(self.variables, set_of_expressions, i_vec)[1]
+            j_vec_sum = solve_linear_equations(self.variables, set_of_expressions, j_vec)[1]
+            return i_vec_sum == j_vec_sum
         
         raise ValueError(f"Ilegal boolcondition: {bool_condition}.")
     
-    def _evaluate_andcondition_on_cartesian(self, and_condition: ANDCondition, cartesian) -> bool:
-        assert isinstance(cartesian, self.lattice_class)
+    def _evaluate_andcondition_on_set(self, and_condition: ANDCondition, set_of_expressions: Set[AvailableExpression]) -> bool:
         for bool_condition in and_condition.conjunction_list:
-            if not self._evaluate_boolcondition_on_cartesian(bool_condition, cartesian):
+            if not self._evaluate_boolcondition_on_set(bool_condition, set_of_expressions):
                 return False
         return True
 
-    def _evaluate_orcondition_on_cartesian(self, or_condition: ORCondition, cartesian) -> bool:
-        assert isinstance(cartesian, self.lattice_class)
+    def _evaluate_orcondition_on_set(self, or_condition: ORCondition, set_of_expressions: Set[AvailableExpression]) -> bool:
         for and_condition in or_condition.disjunction_list:
-            if self._evaluate_andcondition_on_cartesian(and_condition, cartesian):
+            if self._evaluate_andcondition_on_set(and_condition, set_of_expressions):
                 return True
         return False
 
@@ -202,25 +133,42 @@ class SummationStaticAnalyzer:
             pass
 
         if command.command_type == CommandType.C_Assign_Var:    # i := j
-            pass
+            i_variable = command.command_parameters['i']
+            j_variable = command.command_parameters['j']
+            new_set = clean_variable_from_set(i_variable, new_set)
+            new_set.add(AvailableExpression(i_variable, j_variable, 0))
 
         if command.command_type == CommandType.C_Assign_Const:    # i := K
-            pass
+            i_variable = command.command_parameters['i']
+            const = command.command_parameters['K']
+            new_set = clean_variable_from_set(i_variable, new_set)
+            new_set.add(AvailableExpression(i_variable, None, const))
         
         if command.command_type == CommandType.C_Assign_Unknown:    # i := ?
-            pass
+            i_variable = command.command_parameters['i']
+            new_set = clean_variable_from_set(i_variable, new_set)
         
         if command.command_type == CommandType.C_Plus1:     # i := j + 1
-            pass
+            i_variable = command.command_parameters['i']
+            j_variable = command.command_parameters['j']
+            new_set = clean_variable_from_set(i_variable, new_set)
+            new_set.add(AvailableExpression(i_variable, j_variable, 1))
 
         if command.command_type == CommandType.C_Minus1:    # i := j - 1
-            pass
+            i_variable = command.command_parameters['i']
+            j_variable = command.command_parameters['j']
+            new_set = clean_variable_from_set(i_variable, new_set)
+            new_set.add(AvailableExpression(i_variable, j_variable, -1))
         
         if command.command_type == CommandType.C_Assume:    # assume E
-            pass
+            e_condition: ECondition = command.command_parameters['E']
+            new_set = self._evaluate_econdition_on_set(e_condition, new_set)
         
         if command.command_type == CommandType.C_Assert:    # assert ORC
-            pass
+            or_condition: ORCondition = command.command_parameters['ORC']
+            if not self._evaluate_orcondition_on_set(or_condition, new_set):
+                solution_without_sigma = solve_linear_equations(self.variables, new_set, [])[0]
+                print(f"Assretion {or_condition} failed!\nGot the following solutions: {solution_without_sigma}.")
         
         # Finally - we explicate and inform the user if he should try with a different number.
         new_set = explicate_set(new_set)
