@@ -107,9 +107,9 @@ def explicate_set(set_of_expressions: Set[AvailableExpression], maximal_integer:
             z = second_expression.variable
             n = first_expression.integer
             m = second_expression.integer
-            if (x == z) or (y == z) or (x == y):  # to avoid infinite loop
+            if (x == z) or (y == z) or (x == y):  # to avoid infinite loop TODO go over it...
                 continue
-            if abs(m+n) > maximal_integer:
+            if abs(m+n) > maximal_integer:  # TODO check if we can avoid it.
                 continue
             new_set.add(AvailableExpression(result_variable=x, variable=z, integer=(m+n)))
 
@@ -125,6 +125,6 @@ def aux_examples():
 
     s = {ae1, ae2, ae3, ae4}
     print(s)
-    new_s = explicate_set(s)
+    new_s = explicate_set(s, maximal_integer=60)
     # new_s = clean_variable_from_set("b", s)
     print(new_s)
