@@ -188,6 +188,6 @@ class SummationStaticAnalyzer:
                     f"Executing the command {command} on state {current_state} resulted in {new_set}, \
                     but the integer {integer} is more than {self.maximal_absolute_value_of_integer}. \
                     Consider using a higher maximal integer."
-                assert information
+                raise RuntimeError(information)
         return self.lattice_class(expressions_set = new_set)
 

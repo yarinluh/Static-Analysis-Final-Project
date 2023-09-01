@@ -1,0 +1,9 @@
+x y z w
+
+L0      x := ?      L1
+L1      y := ?      L2
+L2      z := ?      L3
+L3      w := ?      L4
+L4      assume x = y   L5
+L5      assume z = w   L6
+L6      assert (SUM z x = SUM w y)      L7

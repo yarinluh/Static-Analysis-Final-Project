@@ -110,7 +110,7 @@ def explicate_set(set_of_expressions: Set[AvailableExpression], maximal_integer:
         for second_expression in set_of_expressions:
             z = second_expression.variable
             m = second_expression.integer
-            if y is None and z is None and x != second_expression.result_variable:
+            if y is None and z is None and x != second_expression.result_variable and abs(m-n) <= maximal_integer:
                 new_set.add(AvailableExpression(x, second_expression.result_variable, n-m))
                 new_set.add(AvailableExpression(second_expression.result_variable, x, m-n))
                 continue

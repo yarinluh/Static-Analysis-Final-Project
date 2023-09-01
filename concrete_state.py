@@ -1,6 +1,7 @@
 from saav_parser.constants import VARIABLE_NAMES
 from saav_parser import Command, CommandType, ECondition, EConditionType, ORCondition, \
     ANDCondition, BOOLCondition, BoolConditionType
+from typing import List
 
 UNKNOWN = "Unknown"
 UNDEFINED = "Undefined"
@@ -45,6 +46,16 @@ class ConcreteState:
             i_variable = bool_condition.boolcondition_parameters['i']
             i_value = self[i_variable]
             return isinstance(i_value, int) and i_value % 2 != 0
+        
+        if bool_condition.boolcondition_type == BoolConditionType.B_Sum:
+            i_vec: List[str] = bool_condition.boolcondition_parameters['i_vec']
+            i_sum = sum([self[i_var] for i_var in i_vec])
+            j_vec: List[str] = bool_condition.boolcondition_parameters['j_vec']
+            j_sum = sum([self[j_var] for j_var in j_vec])
+            return i_sum == j_sum
+
+        raise ValueError(f"Ilegal boolcondition: {bool_condition}.")
+
 
     def evaluate_andcondition(self, and_condition: ANDCondition) -> bool:
         return all([self.evaluate_boolcondition(b) for b in and_condition.conjunction_list])
