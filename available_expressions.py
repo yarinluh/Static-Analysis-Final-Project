@@ -101,12 +101,22 @@ def explicate_set(set_of_expressions: Set[AvailableExpression], maximal_integer:
     for first_expression in set_of_expressions:
         x = first_expression.result_variable
         y = first_expression.variable
+        n = first_expression.integer
+        if x == y:
+            print(f"Warning! expression {first_expression} should not be in a set...")
+        if y != None:            
+            new_set.add(AvailableExpression(y, x, -n))
+
         for second_expression in set_of_expressions:
+            z = second_expression.variable
+            m = second_expression.integer
+            if y is None and z is None and x != second_expression.result_variable:
+                new_set.add(AvailableExpression(x, second_expression.result_variable, n-m))
+                new_set.add(AvailableExpression(second_expression.result_variable, x, m-n))
+                continue
             if second_expression.result_variable != y:
                 continue
-            z = second_expression.variable
-            n = first_expression.integer
-            m = second_expression.integer
+
             if (x == z) or (y == z) or (x == y):  # to avoid infinite loop TODO go over it...
                 continue
             if abs(m+n) > maximal_integer:  # TODO check if we can avoid it.

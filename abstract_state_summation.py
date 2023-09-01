@@ -10,7 +10,8 @@ def create_available_expressions_lattice(variables: List[str], maximal_absolute_
     TOP_SET = {AvailableExpression(result_variable=result_variable, variable=variable, integer=integer) \
                             for result_variable in ALL_VARIABLES \
                             for variable in ALL_VARIABLES + [None] \
-                            for integer in range(-MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER, MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER+1)}
+                            for integer in range(-MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER, MAXIMAL_ABSOLUTE_VALUE_OF_INTEGER+1) \
+                            if result_variable != variable}
 
     class AELattice(Lattice):
         def __init__(self, expressions_set: Set[AvailableExpression]):
@@ -106,9 +107,13 @@ class SummationStaticAnalyzer:
 
         if boolcondition_type == BoolConditionType.B_Sum:
             i_vec: List[str] = bool_condition.boolcondition_parameters['i_vec']
-            j_vec: List[str] = bool_condition.boolcondition_parameters['j_vec']
             i_vec_sum = solve_linear_equations(self.variables, set_of_expressions, i_vec)[1]
+            print(f"Summation result for {i_vec} is: {i_vec_sum}")
+
+            j_vec: List[str] = bool_condition.boolcondition_parameters['j_vec']
             j_vec_sum = solve_linear_equations(self.variables, set_of_expressions, j_vec)[1]
+            print(f"Summation result for {j_vec} is: {j_vec_sum}")
+
             return i_vec_sum == j_vec_sum
         
         raise ValueError(f"Ilegal boolcondition: {bool_condition}.")
