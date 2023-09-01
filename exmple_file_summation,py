@@ -28,4 +28,4 @@ def example2():
     # vanilla_fixpoint(cfg, parity_analyzer)
     chaotic_iteration(cfg, summation_analyser) 
 
-example2()
+example1()

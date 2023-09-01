@@ -52,7 +52,7 @@ def create_available_expressions_lattice(variables: List[str], maximal_absolute_
     return AELattice
 
 def ae_exmple():
-    variables = {'x', 'w', 'r'}
+    variables = ['x', 'w', 'r']
     maximal_value = 4
     AELattice: Type[Lattice] = create_available_expressions_lattice(variables, maximal_value)
 
@@ -76,7 +76,8 @@ class SummationStaticAnalyzer:
         if econdition_type  == EConditionType.E_Equal_Var:      # i = j
             i_variable = econdition.econdition_parameters['i']
             j_variable = econdition.econdition_parameters['j']
-            new_set.add(AvailableExpression(i_variable, j_variable, 0))
+            if i_variable != j_variable:
+                new_set.add(AvailableExpression(i_variable, j_variable, 0))
 
         elif econdition_type == EConditionType.E_Diff_Var:        # i != j
             pass  # TODO can be done better?
@@ -87,7 +88,7 @@ class SummationStaticAnalyzer:
             new_set.add(AvailableExpression(i_variable, None, K_value))
 
         elif econdition_type == EConditionType.E_Diff_Const:      # i != K
-            pass
+            pass  # TODO can be done better?
         
         elif econdition_type == EConditionType.E_True:
             pass
@@ -135,8 +136,9 @@ class SummationStaticAnalyzer:
         if command.command_type == CommandType.C_Assign_Var:    # i := j
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
-            new_set = clean_variable_from_set(i_variable, new_set)
-            new_set.add(AvailableExpression(i_variable, j_variable, 0))
+            if i_variable != j_variable:
+                new_set = clean_variable_from_set(i_variable, new_set)
+                new_set.add(AvailableExpression(i_variable, j_variable, 0))
 
         if command.command_type == CommandType.C_Assign_Const:    # i := K
             i_variable = command.command_parameters['i']
@@ -152,13 +154,15 @@ class SummationStaticAnalyzer:
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
             new_set = clean_variable_from_set(i_variable, new_set)
-            new_set.add(AvailableExpression(i_variable, j_variable, 1))
+            if i_variable != j_variable:
+                new_set.add(AvailableExpression(i_variable, j_variable, 1))
 
         if command.command_type == CommandType.C_Minus1:    # i := j - 1
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
             new_set = clean_variable_from_set(i_variable, new_set)
-            new_set.add(AvailableExpression(i_variable, j_variable, -1))
+            if i_variable != j_variable:
+                new_set.add(AvailableExpression(i_variable, j_variable, -1))
         
         if command.command_type == CommandType.C_Assume:    # assume E
             e_condition: ECondition = command.command_parameters['E']
