@@ -2,6 +2,7 @@ from __future__ import annotations
 from abc import abstractmethod, ABC
 from enum import Enum
 from typing import List, Type, Tuple, Dict, Set, Iterator
+# from typing_extensions import Self
 
 class Lattice(ABC):
 
@@ -47,10 +48,21 @@ class Lattice(ABC):
             join_result = join_result.join(element)
         return join_result
 
-def create_cartesian_product_lattice(variables: List[str], lattice_class: Type[Lattice]) -> Type[Lattice]:
+class Itemable(ABC):
+    @abstractmethod
+    def __getitem__(self, variable: str):
+        pass
+    @abstractmethod
+    def __setitem__(self, variable: str, value):
+        pass
+
+class ItemableLattice(Itemable, Lattice):
+    pass
+
+def create_cartesian_product_lattice(variables: List[str], lattice_class: Type[Lattice]) -> Type[ItemableLattice]:
     #This function creates the cartesian product of n copies of the lattice, one of each variable
 
-    class cartesian_product(Lattice):
+    class cartesian_product(ItemableLattice):
         def __init__(self, tuple: Tuple[lattice_class]):
             self.tuple: Tuple[lattice_class] = tuple
             self.index_of_variables: Dict[str, int] = {v: i for i, v in enumerate(variables)}
@@ -208,11 +220,6 @@ def create_relational_product_lattice(variables: List[str], lattice_class: Type[
     cartesian_product: Type[ListableLattice] = create_cartesian_product_listable_lattice(variables, lattice_class)
     relational_product: Type[ListableLattice] = create_disjunctive_completion_lattice(cartesian_product)
     return relational_product
-
-class Itemable(ABC):
-    @abstractmethod
-    def __getitem__(self, variable: str):
-        pass
 
 class ListableItemable(Listable, Itemable):
     pass

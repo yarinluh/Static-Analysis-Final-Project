@@ -87,3 +87,4 @@ class ECondition:
             return FALSE_STRING
         
         raise SyntaxError(f"Ilegal ECondition: {self.econdition_text}!")
+

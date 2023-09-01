@@ -1,0 +1,7 @@
+i j x y
+
+L0   i := ?   L1
+L1   j := ?   L2
+L2   x := i + 1  L3
+L3   y := j - 1  L4
+L4   assert (SUM i j = SUM x y)   L5

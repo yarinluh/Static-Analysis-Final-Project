@@ -103,6 +103,9 @@ class Command:
 
         if self.command_type == CommandType.C_Assert:
             return {"ORC": ORCondition(orcondition_text=' '.join(self.command_text[1:]))}
+        
+        raise SyntaxError(f"Ilegal Command: {self.command_text}.")
+
 
     def __repr__(self) -> str:
         if self.command_type == CommandType.C_Skip:
@@ -128,3 +131,5 @@ class Command:
 
         if self.command_type == CommandType.C_Assert:
             return f"assert {self.command_parameters['ORC']}"
+        
+        raise SyntaxError(f"Ilegal Command: {self.command_text}.")

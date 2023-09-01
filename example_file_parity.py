@@ -5,7 +5,7 @@ from pathlib import Path
 from abstract_state_parity import ParityStaticAnalyzer
 
 def example1():
-    path_to_program: Path = Path('.\examples\example1.txt')
+    path_to_program: Path = Path('examples_parity\example1.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
@@ -16,7 +16,7 @@ def example1():
     chaotic_iteration(cfg, parity_analyzer)
 
 def example2():
-    path_to_program: Path = Path('.\examples\example2.txt')
+    path_to_program: Path = Path('examples_parity\example2.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
@@ -26,7 +26,7 @@ def example2():
     chaotic_iteration(cfg, parity_analyzer)
 
 def example3():
-    path_to_program: Path = Path('.\examples\example3.txt')
+    path_to_program: Path = Path('examples_parity\example3.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
@@ -36,7 +36,7 @@ def example3():
     chaotic_iteration(cfg, parity_analyzer)
 
 def example4():
-    path_to_program: Path = Path('.\examples\example4.txt')
+    path_to_program: Path = Path('examples_parity\example4.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
@@ -47,7 +47,7 @@ def example4():
 
 def example5():
     #This example highlights a bug in our current analysis that's leading to it not being sound
-    path_to_program: Path = Path('.\examples\example5.txt')
+    path_to_program: Path = Path('examples_parity\example5.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
@@ -58,7 +58,7 @@ def example5():
 
 def example6():
     #This example highlights a bug in our current analysis that's leading to it not being sound
-    path_to_program: Path = Path('.\examples\example6.txt')
+    path_to_program: Path = Path('examples_pairty\example6.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
