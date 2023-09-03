@@ -1,7 +1,7 @@
 n m i j k r
 
-L0   n := 2   L1
-L1   m := 4   L2
+L0   n := 1   L1
+L1   m := 3   L2
 L2   i := n   L3
 L3   j := m   L4
 L4   assume j != 0   L5
