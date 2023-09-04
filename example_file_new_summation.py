@@ -12,11 +12,14 @@ def run_summation_example(index: int):
 
     summation_analyser: SummationStaticAnalyzer = SummationStaticAnalyzer(variables=p.program_variables,
                                                                           coefficiets_range=(-1, 1),
-                                                                          integer_range=(-4, 4))
+                                                                          integer_range=(-1, 1))
 
     # cfg.run_cfg()
+    cfg.plot_graph()
     # vanilla_fixpoint(cfg, parity_analyzer)
-    chaotic_iteration(cfg, summation_analyser)
+    result = chaotic_iteration(cfg, summation_analyser)
+    for item in result:
+        print(item)
 
 
-run_summation_example(5)
+run_summation_example(3)

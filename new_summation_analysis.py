@@ -4,7 +4,7 @@ from typing import List, Tuple, Type, Set, Iterator
 from lattice_creation import Lattice
 from saav_parser import ECondition, EConditionType, BOOLCondition, BoolConditionType, ANDCondition, ORCondition, Command, CommandType
 
-from equations import clear_variable_from_set, create_equation_class, get_all_possible_equations, solve_linear_equations
+from equations import clear_variable_from_set, create_equation_class, get_all_possible_equations, solve_linear_equations, replace_variable_with_another
 
 
 def create_available_equations_lattice(EquationClass: Type, coefficiets_range: Tuple[int, int],
@@ -67,7 +67,6 @@ def ae_example():
     # for eq in b.equations_set:
     #     if str(eq) == "":
     #         print(eq, eq.coefficients, eq.m)
-
 
 
 class SummationStaticAnalyzer:
@@ -161,13 +160,12 @@ class SummationStaticAnalyzer:
             j_variable = command.command_parameters['j']
             if i_variable != j_variable:
                 new_set = clear_variable_from_set(new_set, i_variable)
-                i_variable_index = self.variables.index(i_variable)
-                j_variable_index = self.variables.index(j_variable)
-                coefficients_for_equation = [0] * len(self.variables)
-                coefficients_for_equation[i_variable_index] = 1
-                coefficients_for_equation[j_variable_index] = -1
-                coefficients_for_equation = tuple(coefficients_for_equation)
-                new_set.add(self.equations_class(coefficients=coefficients_for_equation, m=0))
+                new_set = replace_variable_with_another(new_set, i_variable, j_variable)
+                coefficients_for_equation = tuple([0] * len(self.variables))
+                new_equation = self.equations_class(coefficients=coefficients_for_equation, m=0)
+                new_equation.set_coefficient(i_variable, 1)
+                new_equation.set_coefficient(j_variable, -1)
+                new_set.add(new_equation)
 
         if command.command_type == CommandType.C_Assign_Const:    # i := K
             i_variable = command.command_parameters['i']
@@ -221,13 +219,16 @@ class SummationStaticAnalyzer:
                 print(f"Assretion {or_condition} failed!")
         
         # Finally - we explicate.
-        print(f"Explicating the set {new_set}.")
-        new_set = get_all_possible_equations(EquationClass=self.equations_class,
-                                             list_of_equations=list(new_set),
-                                             minimal_coefficient=self.coefficiets_range[0],
-                                             maximal_coefficient=self.coefficiets_range[1],
-                                             minimal_integer=self.integer_range[0],
-                                             maximal_integer=self.integer_range[1])
+        if new_set != current_state.equations_set: # type: ignore
+            print(f"Explicating the set {new_set}.")
+            new_set = get_all_possible_equations(EquationClass=self.equations_class,
+                                                list_of_equations=list(new_set),
+                                                minimal_coefficient=self.coefficiets_range[0],
+                                                maximal_coefficient=self.coefficiets_range[1],
+                                                minimal_integer=self.integer_range[0],
+                                                maximal_integer=self.integer_range[1])
+        else:
+            print(f"No need to explicate the set, it remains the same after {command}.")
         return self.lattice_class(equations_set=new_set) # type: ignore
 
 

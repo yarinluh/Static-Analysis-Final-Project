@@ -33,6 +33,18 @@ def create_equation_class(variables: List[str]):
             index_of_item = self.variables.index(item)
             return self.coefficients[index_of_item] != 0
         
+        def get_coefficient(self, var: str) -> int:
+            assert var in self.variables
+            var_index = self.variables.index(var)
+            return self.coefficients[var_index]
+        
+        def set_coefficient(self, var: str, coeff: int) -> None:
+            assert var in self.variables
+            var_index = self.variables.index(var)
+            coeff_list = list(self.coefficients)
+            coeff_list[var_index] = coeff
+            self.coefficients = tuple(coeff_list)
+        
         def __repr__(self) -> str:
             s = ""
             for var, coeff in zip(self.variables, self.coefficients):
@@ -72,14 +84,33 @@ def create_equation_class(variables: List[str]):
     return Equation
         
 
+def get_contradicting_equations(equation, minimal_integer: int, maximal_integer: int) -> set:
+    """
+    For instance, if the equation is x + y + 1 = 0,
+    returns every equation of the form x + y + _ = 0, where _ is a constant different than 1;
+    ans also every equation of the form -x - y - _ = 0, correspondly.
+    """
+    s = set()
+    for integer in range(minimal_integer, maximal_integer + 1):
+        if integer == equation.m:
+            continue
+        new_equation = equation.copy()
+        new_equation.m = integer
+        s.add(new_equation)
+        
+        flipped_equation = new_equation.copy()
+        for var in flipped_equation.variables:
+            flipped_equation.set_coefficient(var, -flipped_equation.get_coefficient(var))
+        flipped_equation.m *= (-1)
+        s.add(flipped_equation)
+
+    return s
+
 def get_all_possible_equations(EquationClass: Type, list_of_equations: list,
                                minimal_coefficient: int, maximal_coefficient: int,
                                minimal_integer: int, maximal_integer: int) -> set:
     """
-    Assuming list_of_equation has a solution, so does list_of_equations_with_sigme.
-    So first we check if list_of_equation has a solution, and if not - we don't change the set.
-    TODO should we do so? or maybe return an empty set? of the set of all possible equations??
-    TODO consult with Raz...?
+    TODO lower running times!
     """
     assert all(isinstance(eq, EquationClass) for eq in list_of_equations)
     if len(list_of_equations) == 0:
@@ -89,20 +120,44 @@ def get_all_possible_equations(EquationClass: Type, list_of_equations: list,
 
     try_to_solve_list_of_equations = solve(list_of_equations_as_strings, variables, dict=True)
     if len(try_to_solve_list_of_equations) == 0:
+        """
+        Assuming list_of_equation has a solution, so does list_of_equations_with_sigme.
+        So first we check if list_of_equation has a solution, and if not - we don't change the set.
+        TODO should we do so? or maybe return an empty set? of the set of all possible equations??
+        TODO consult with Raz...?
+        """
         return set(list_of_equations)
 
-    all_equations: List[EquationClass] = EquationClass.all_equations(minimal_coefficient, maximal_coefficient,
-                                                                    minimal_integer, maximal_integer)
+    all_equations: Set[EquationClass] = set(EquationClass.all_equations(minimal_coefficient, maximal_coefficient,
+                                                                        minimal_integer, maximal_integer))
+    result: Set[EquationClass] = set(list_of_equations)
+    equations_to_skip: Set[EquationClass] = set()
 
-    result: Set[EquationClass] = set()
     for equation in all_equations:
+        for var in {v for v in variables if v in equation}:
+            if all([var not in original_equation for original_equation in list_of_equations]):
+                equations_to_skip.add(equation)
+                break
+
+    for equation in all_equations:
+
         if str(equation) == "" or str(equation) == "0":  # all coeffieients & integers are 0, or the equations is "0 = 0".
             continue
+        if equation in equations_to_skip:
+            continue
+        if equation in result:  # if equation is one of the original equations...
+            contradicting_equations = get_contradicting_equations(equation, minimal_integer, maximal_integer)
+            equations_to_skip.union(contradicting_equations)
+            continue
+
         equation_with_sigma = f"{sigma} - ({equation})"
         list_of_equations_with_sigme = list_of_equations_as_strings + [equation_with_sigma]
         solution = solve(list_of_equations_with_sigme, [sigma] + variables, dict=True)[0]
         if solution[sigma] == 0:
             result.add(equation)
+            contradicting_equations = get_contradicting_equations(equation, minimal_integer, maximal_integer)
+            equations_to_skip.union(contradicting_equations)
+
     return result
 
 def equation_example():
@@ -122,6 +177,28 @@ def clear_variable_from_set(set_of_equations: set, variable_to_clear: str):
     for equation in set_of_equations:
         if variable_to_clear in equation:
             new_set.remove(equation)
+    return new_set
+
+def replace_variable_with_another(set_of_equations: set, new_variable: str, old_variable: str):
+    """
+    This function is used in case we want to add an assginment: new_variable := old_variable.
+    It takes every equation that has old_variable and replaced it with new_variable.
+
+    For instnace, if we had an equation x + y = 15 and now we assigned i := y, we should add x + i = 15.
+
+    TODO:
+        For now, it is not implementesd on assignments like new_variable := old_variable + 1.
+        It can be done in a similar way - just need to make sure the new equation does not pass the limit of integers.
+    """
+    new_set: set = set_of_equations.copy()
+    for equation in set_of_equations:
+        if old_variable in equation:
+            old_coefficient = equation.get_coefficient(old_variable)
+            assert equation.get_coefficient(new_variable) == 0
+            new_equation = equation.copy()
+            new_equation.set_coefficient(old_variable, 0)
+            new_equation.set_coefficient(new_variable, old_coefficient)
+            new_set.add(new_equation)
     return new_set
 
 def get_summation_equation(variables_to_sum: List[str]):
