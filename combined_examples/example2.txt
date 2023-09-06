@@ -1,0 +1,11 @@
+i j k m
+
+L0      i := ?	    L1
+L1      j := ?	    L2
+L2      assume m = 0	 L3
+L3      k := 1			 L4
+L4      m := i			 L7
+L2      assume m != 0	 L5
+L5      k := 0			 L6
+L6      m := j			 L7
+L7      assert (EVEN k  SUM m = SUM i) (ODD k  SUM m = SUM j)    L8

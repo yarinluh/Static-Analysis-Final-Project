@@ -39,6 +39,11 @@ def create_available_equations_lattice(EquationClass: Type, coefficiets_range: T
             return AvailableEquationsLattice(self.equations_set.intersection(other.equations_set))
         
         def __repr__(self) -> str:
+            if len(self.equations_set) > 100:
+                # Too long to print...
+                string_equations = [equation.__repr__() for equation in self.equations_set]
+                first_ten_equations = ', '.join(string_equations[0:10])
+                return "...{" + first_ten_equations + f", ..., {string_equations[-1]}" + "}..."
             return self.equations_set.__repr__()
         
         def copy(self: AvailableEquationsLattice):
@@ -220,7 +225,7 @@ class SummationStaticAnalyzer:
         
         # Finally - we explicate.
         if new_set != current_state.equations_set: # type: ignore
-            print(f"Explicating the set {new_set}.")
+            print(f"Explicating the set {self.lattice_class(equations_set=new_set)}.")
             new_set = get_all_possible_equations(EquationClass=self.equations_class,
                                                 list_of_equations=list(new_set),
                                                 minimal_coefficient=self.coefficiets_range[0],

@@ -124,7 +124,7 @@ def get_all_possible_equations(EquationClass: Type, list_of_equations: list,
         Assuming list_of_equation has a solution, so does list_of_equations_with_sigme.
         So first we check if list_of_equation has a solution, and if not - we don't change the set.
         TODO should we do so? or maybe return an empty set? of the set of all possible equations??
-        TODO consult with Raz...?
+        TODO consult with Raz...? He says we should return bottom (= set of everythin
         """
         return set(list_of_equations)
 
