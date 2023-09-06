@@ -2,7 +2,6 @@ from __future__ import annotations
 from abc import abstractmethod, ABC
 from enum import Enum
 from typing import List, Type, Tuple, Dict, Set, Iterator
-# from typing_extensions import Self
 
 class Lattice(ABC):
 

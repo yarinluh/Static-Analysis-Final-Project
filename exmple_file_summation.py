@@ -28,4 +28,4 @@ def run_summation_example(index: int):
     chaotic_iteration(cfg, summation_analyser)
 
 
-run_summation_example(6)
+run_summation_example(5)

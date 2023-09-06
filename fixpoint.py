@@ -1,5 +1,5 @@
 from control_flow_graph import ControlFlowGraph
-import random
+from time import time
 
 def vanilla_fixpoint(cfg, analyzer):
     nodes = cfg.nodes
@@ -26,12 +26,14 @@ def chaotic_iteration(cfg, analyzer):
     states_vector[start_node] = analyzer.lattice_class.top()
     worklist = set(nodes)
     iteration = 0
+    start_time = time()
+
     while worklist:
-        print("\niteration",iteration)
-        print("worklist",worklist)
+        print(f"\nIteration #{iteration} (started after {int(time()-start_time)} seconds).")
+        print(f"Current worklist: {worklist}.")
         node = worklist.pop()
         new_vector = update_node_state(cfg, states_vector, node, analyzer)
-        if new_vector != states_vector:
+        if new_vector != states_vector: 
             dependencies = create_dependencies_of_node(cfg,node)
             worklist=worklist.union(dependencies)
         states_vector = new_vector
