@@ -46,6 +46,9 @@ def create_available_equations_lattice(EquationClass: Type, coefficiets_range: T
                 return "...{" + first_ten_equations + f", ..., {string_equations[-1]}" + "}..."
             return self.equations_set.__repr__()
         
+        def __hash__(self) -> int:
+            return hash(self.__repr__())
+        
         def copy(self: AvailableEquationsLattice):
             return AvailableEquationsLattice({s.copy() for s in self.equations_set})
         
@@ -61,11 +64,13 @@ def create_available_equations_lattice(EquationClass: Type, coefficiets_range: T
 
 def ae_example():
     variables = ['x', 'w', 'r']
-    AEQ_Lattice: Type[Lattice] = create_available_equations_lattice(variables, (-4, 4), (-5, 5))
+    EquationClass = create_equation_class(variables)
+    AEQ_Lattice: Type[Lattice] = create_available_equations_lattice(EquationClass, (-4, 4), (-5, 5))
 
     a = AEQ_Lattice.top()
     print(a)
     b = AEQ_Lattice.bottom()
+    print(len(b))
     # print(b)
     # print(len(b))
 

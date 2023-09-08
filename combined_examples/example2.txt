@@ -8,4 +8,4 @@ L4      m := i			 L7
 L2      assume m != 0	 L5
 L5      k := 0			 L6
 L6      m := j			 L7
-L7      assert (EVEN k  SUM m = SUM i) (ODD k  SUM m = SUM j)    L8
+L7      assert (EVEN k  SUM m = SUM k) (ODD k  SUM m = SUM i)    L8
