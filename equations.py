@@ -118,19 +118,19 @@ def get_all_possible_equations(EquationClass: Type, list_of_equations: list,
     variables = list_of_equations[0].variables
     list_of_equations_as_strings = [str(eq) for eq in list_of_equations if str(eq) != ""]
 
+    all_equations: Set[EquationClass] = set(EquationClass.all_equations(minimal_coefficient, maximal_coefficient,
+                                                                        minimal_integer, maximal_integer))
     try_to_solve_list_of_equations = solve(list_of_equations_as_strings, variables, dict=True)
     if len(try_to_solve_list_of_equations) == 0:
         """
         Assuming list_of_equation has a solution, so does list_of_equations_with_sigme.
         So first we check if list_of_equation has a solution, and if not - we don't change the set.
         TODO should we do so? or maybe return an empty set? of the set of all possible equations??
-        TODO consult with Raz...?
+        TODO consult with Raz...? He says we should return bottom (= set of everythin
         """
-        return set(list_of_equations)
+        return all_equations
 
-    all_equations: Set[EquationClass] = set(EquationClass.all_equations(minimal_coefficient, maximal_coefficient,
-                                                                        minimal_integer, maximal_integer))
-    result: Set[EquationClass] = set(list_of_equations)
+    result: Set[EquationClass] = set(list_of_equations).intersection(all_equationsC)
     equations_to_skip: Set[EquationClass] = set()
 
     for equation in all_equations:
@@ -153,6 +153,7 @@ def get_all_possible_equations(EquationClass: Type, list_of_equations: list,
         equation_with_sigma = f"{sigma} - ({equation})"
         list_of_equations_with_sigme = list_of_equations_as_strings + [equation_with_sigma]
         solution = solve(list_of_equations_with_sigme, [sigma] + variables, dict=True)[0]
+        # TODO can be shoreter if we use the solution without sigma... But see if solve takes all the time...
         if solution[sigma] == 0:
             result.add(equation)
             contradicting_equations = get_contradicting_equations(equation, minimal_integer, maximal_integer)
@@ -164,13 +165,13 @@ def equation_example():
     vars = ['x', 'y', 'z']
     Equation = create_equation_class(vars)
     print(Equation.all_equations(-1, 1, -2, 2))
-    eq1 = Equation((1, 0, -1), 5)
+    eq1 = Equation((1, 0, -1), 1)
     print(eq1)
     eq2 = Equation((0, 1, -1), 0)
     print(eq2)
     solution = solve([str(eq) for eq in [eq1, eq2]], vars, dict=True)
     print(solution)
-    print(get_all_possible_equations(Equation, [eq1, eq2], -3, 3, -10, 10))
+    print(get_all_possible_equations(Equation, [eq1, eq2], -1, 1, -2, 2))
 
 def clear_variable_from_set(set_of_equations: set, variable_to_clear: str):
     new_set: set = set_of_equations.copy()

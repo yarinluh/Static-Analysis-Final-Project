@@ -7,5 +7,5 @@ L3   assume i = n   L6
 L3   assume i != n  L4
 L4   i := j + 1  L5
 L5   j := i  L3
-L6   assert (EVEN i  EVEN j) (ODD i  ODD j) L7
+L6   assert (SUM i j = SUM j n  EVEN i  EVEN j) (SUM i j = SUM j n  ODD i  ODD j)  L7
 

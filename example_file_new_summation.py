@@ -18,8 +18,8 @@ def run_summation_example(index: int):
     cfg.plot_graph()
     # vanilla_fixpoint(cfg, parity_analyzer)
     result = chaotic_iteration(cfg, summation_analyser)
-    for item in result:
-        print(item)
+    # for item in result:
+    #     print(item)
 
 
-run_summation_example(3)
+run_summation_example(5)

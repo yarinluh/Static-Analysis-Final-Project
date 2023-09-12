@@ -94,66 +94,66 @@ class ParityStaticAnalyzer:
                 return True
         return False
 
-    def execute_command_from_abstract_state(self, current_state, command: Command):
-        assert isinstance(current_state, self.lattice_class)
+    def execute_command_on_carteisan(self, cartesian, command: Command) -> set:
+        assert isinstance(cartesian, self.tuple_class)
         command_type: CommandType = command.command_type
-        new_set: Set[Listable] = set()
 
         if command_type == CommandType.C_Skip:
-            return current_state.copy()
-
+            return {cartesian.copy()}
+        
         if command.command_type == CommandType.C_Assign_Var:    # i := j
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
-            for cartesian in current_state:
-                j_value = cartesian[j_variable]
-                new_cartesian = cartesian.copy()
-                new_cartesian[i_variable] = j_value
-                new_set.add(new_cartesian)
-
+            j_value = cartesian[j_variable]
+            new_cartesian = cartesian.copy()
+            new_cartesian[i_variable] = j_value
+            return {new_cartesian}
+        
         if command.command_type == CommandType.C_Assign_Const:    # i := K
             i_variable = command.command_parameters['i']
             const = command.command_parameters['K']
             parity = Parity.EVEN if const % 2 == 0 else Parity.ODD
-            for cartesian in current_state:
-                new_cartesian = cartesian.copy()
-                new_cartesian[i_variable] = parity
-                new_set.add(new_cartesian)
+            new_cartesian = cartesian.copy()
+            new_cartesian[i_variable] = parity
+            return {new_cartesian}
         
         if command.command_type == CommandType.C_Assign_Unknown:    # i := ?
             i_variable = command.command_parameters['i']
-            for cartesian in current_state:
-                new_cartesian = cartesian.copy()
-                new_cartesian[i_variable] = Parity.EVEN
-                new_set.add(new_cartesian)
-                new_cartesian = cartesian.copy()
-                new_cartesian[i_variable] = Parity.ODD
-                new_set.add(new_cartesian)
+            new_cartesian_even = cartesian.copy()
+            new_cartesian_even[i_variable] = Parity.EVEN
+            new_cartesian_odd = cartesian.copy()
+            new_cartesian_odd[i_variable] = Parity.ODD
+            return {new_cartesian_even, new_cartesian_odd}
         
         if command.command_type == CommandType.C_Plus1 or\
             command.command_type == CommandType.C_Minus1:    # i = j +- 1
             i_variable = command.command_parameters['i']
             j_variable = command.command_parameters['j']
-            for cartesian in current_state:
-                j_value = cartesian[j_variable]
-                updated_j_value = Parity.EVEN if j_value == Parity.ODD else Parity.ODD
-                new_cartesian = cartesian.copy()
-                new_cartesian[i_variable] = updated_j_value
-                new_set.add(new_cartesian)
+            j_value = cartesian[j_variable]
+            updated_j_value = Parity.EVEN if j_value == Parity.ODD else Parity.ODD
+            new_cartesian = cartesian.copy()
+            new_cartesian[i_variable] = updated_j_value
+            return {new_cartesian}
         
-        if command.command_type == CommandType.C_Assume:    # assume E
+        if command.command_type == CommandType.C_Assume:
             e_condition: ECondition = command.command_parameters['E']
-            for cartesian in current_state:
-                if self._evaluate_econdition_on_cartesian(e_condition, cartesian):
-                    new_set.add(cartesian.copy())
+            if self._evaluate_econdition_on_cartesian(e_condition, cartesian):
+                return {cartesian.copy()}
+            return set()
         
-        if command.command_type == CommandType.C_Assert:    # assert ORC
+        if command.command_type == CommandType.C_Assert:
             or_condition: ORCondition = command.command_parameters['ORC']
-            for cartesian in current_state:
-                if not self._evaluate_orcondition_on_cartesian(or_condition, cartesian):
-                    print(f"Assertaion {or_condition} failted due to: {cartesian}.")
-            return current_state.copy()
-                            
+            if not self._evaluate_orcondition_on_cartesian(or_condition, cartesian):
+                print(f"Assertaion {or_condition} failted due to: {cartesian}.")
+            return {cartesian.copy()}
+        
+        raise ValueError(f"Ilegal command: {command}.")
+
+    def execute_command_from_abstract_state(self, current_state, command: Command):
+        assert isinstance(current_state, self.lattice_class)
+        new_set: Set[Listable] = set()
+        for cartesian in current_state:
+            new_set.update(self.execute_command_on_carteisan(cartesian, command))
         return self.lattice_class(set=new_set) # type: ignore
 
 

@@ -39,7 +39,15 @@ def create_available_equations_lattice(EquationClass: Type, coefficiets_range: T
             return AvailableEquationsLattice(self.equations_set.intersection(other.equations_set))
         
         def __repr__(self) -> str:
+            if len(self.equations_set) > 100:
+                # Too long to print...
+                string_equations = [equation.__repr__() for equation in self.equations_set]
+                first_ten_equations = ', '.join(string_equations[0:10])
+                return "...{" + first_ten_equations + f", ..., {string_equations[-1]}" + "}..."
             return self.equations_set.__repr__()
+        
+        def __hash__(self) -> int:
+            return hash(self.__repr__())
         
         def copy(self: AvailableEquationsLattice):
             return AvailableEquationsLattice({s.copy() for s in self.equations_set})
@@ -56,11 +64,13 @@ def create_available_equations_lattice(EquationClass: Type, coefficiets_range: T
 
 def ae_example():
     variables = ['x', 'w', 'r']
-    AEQ_Lattice: Type[Lattice] = create_available_equations_lattice(variables, (-4, 4), (-5, 5))
+    EquationClass = create_equation_class(variables)
+    AEQ_Lattice: Type[Lattice] = create_available_equations_lattice(EquationClass, (-4, 4), (-5, 5))
 
     a = AEQ_Lattice.top()
     print(a)
     b = AEQ_Lattice.bottom()
+    print(len(b))
     # print(b)
     # print(len(b))
 
@@ -160,7 +170,7 @@ class SummationStaticAnalyzer:
             j_variable = command.command_parameters['j']
             if i_variable != j_variable:
                 new_set = clear_variable_from_set(new_set, i_variable)
-                new_set = replace_variable_with_another(new_set, i_variable, j_variable)
+                # new_set = replace_variable_with_another(new_set, i_variable, j_variable)
                 coefficients_for_equation = tuple([0] * len(self.variables))
                 new_equation = self.equations_class(coefficients=coefficients_for_equation, m=0)
                 new_equation.set_coefficient(i_variable, 1)
@@ -220,7 +230,7 @@ class SummationStaticAnalyzer:
         
         # Finally - we explicate.
         if new_set != current_state.equations_set: # type: ignore
-            print(f"Explicating the set {new_set}.")
+            print(f"Explicating the set {self.lattice_class(equations_set=new_set)}.")
             new_set = get_all_possible_equations(EquationClass=self.equations_class,
                                                 list_of_equations=list(new_set),
                                                 minimal_coefficient=self.coefficiets_range[0],

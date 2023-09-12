@@ -274,3 +274,47 @@ def create_tuple_subsets_lattice(variables: List[str], base_class: Type[Listable
 
 class ListableEnum(type(Enum), type(Listable)):
     pass
+
+def create_cartesian_product_two_lattices(first_lattice: Type[Lattice], second_lattice: Type[Lattice]) -> Type[Lattice]:
+
+    class cartesian_product(Lattice):
+        def __init__(self, first_element: first_lattice, second_element: second_lattice):
+            self.first_element: first_lattice = first_element
+            self.second_element: second_lattice = second_element
+
+        @staticmethod
+        def top() -> cartesian_product:
+            return cartesian_product(first_element=first_lattice.top(), second_element=second_lattice.top())
+        
+        @staticmethod
+        def bottom() -> cartesian_product:
+            return cartesian_product(first_element=first_lattice.bottom(), second_element=second_lattice.bottom())
+        
+        def __eq__(self: cartesian_product, other: cartesian_product) -> bool:
+            return self.first_element == other.first_element and self.second_element == other.second_element
+                
+        def __le__(self: cartesian_product, other: cartesian_product) -> bool:
+            return self.first_element <= other.first_element and self.second_element <= other.second_element
+        
+        def meet(self: cartesian_product, other: cartesian_product) -> cartesian_product:
+            meet_first = self.first_element.meet(other.first_element)
+            meet_second = self.second_element.meet(other.second_element)
+            return cartesian_product(first_element=meet_first, second_element=meet_second)
+        
+        def join(self: cartesian_product, other: cartesian_product) -> cartesian_product:
+            join_first = self.first_element.join(other.first_element)
+            join_second = self.second_element.join(other.second_element)
+            return cartesian_product(first_element=join_first, second_element=join_second)
+        
+        def __hash__(self):
+            return hash(self.__repr__)
+        
+        def __repr__(self) -> str:
+            return f"<{self.first_element.__repr__()}, {self.second_element.__repr__()}>"
+        
+        def __copy__(self):
+            copy_of_first = self.first_element.copy()
+            copy_of_second = self.second_element.copy()
+            return cartesian_product(first_element=copy_of_first, second_element=copy_of_second)
+    
+    return cartesian_product
