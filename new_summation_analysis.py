@@ -170,7 +170,7 @@ class SummationStaticAnalyzer:
             j_variable = command.command_parameters['j']
             if i_variable != j_variable:
                 new_set = clear_variable_from_set(new_set, i_variable)
-                new_set = replace_variable_with_another(new_set, i_variable, j_variable)
+                # new_set = replace_variable_with_another(new_set, i_variable, j_variable)
                 coefficients_for_equation = tuple([0] * len(self.variables))
                 new_equation = self.equations_class(coefficients=coefficients_for_equation, m=0)
                 new_equation.set_coefficient(i_variable, 1)

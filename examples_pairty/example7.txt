@@ -1,0 +1,8 @@
+n 
+
+L0   n := ?   L1
+L1   assume n = 0   L2
+L1   assume n = 1   L2
+L2   assume n != 0   L3 
+L3   assert (ODD n)   L4
+
