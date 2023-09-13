@@ -3,27 +3,27 @@ from time import time
 
 def vanilla_fixpoint(cfg, analyzer):
     nodes = cfg.nodes
-    states_vector = [analyzer.lattice_class.bottom() for _ in nodes]
+    states_dictionary = {n: analyzer.lattice_class.bottom() for n in nodes}
     start_node = cfg.find_start_label()
-    states_vector[start_node] = analyzer.lattice_class.top()
+    states_dictionary[start_node] = analyzer.lattice_class.top()
     iteration = 0
     while True:
         print("iteration",iteration)
-        new_vector = states_vector
+        new_dictionary = states_dictionary.copy()
         for node in nodes:
-            new_vector = update_node_state(cfg,states_vector,node,analyzer)
-        if new_vector == states_vector: 
+            new_dictionary = update_node_state(cfg,new_dictionary,node,analyzer)
+        if new_dictionary == states_dictionary: 
             break
         else:
-            states_vector = new_vector
+            states_dictionary = new_dictionary
         iteration = iteration + 1
-    return states_vector
+    return states_dictionary
 
 def chaotic_iteration(cfg, analyzer):
     nodes = cfg.nodes
-    states_vector = [analyzer.lattice_class.bottom() for _ in nodes]
+    states_dictionary = {n: analyzer.lattice_class.bottom() for n in nodes}
     start_node = cfg.find_start_label()
-    states_vector[start_node] = analyzer.lattice_class.top()
+    states_dictionary[start_node] = analyzer.lattice_class.top()
     worklist = set(nodes)
     iteration = 0
     start_time = time()
@@ -32,16 +32,16 @@ def chaotic_iteration(cfg, analyzer):
         print(f"\nIteration #{iteration} (started after {int(time()-start_time)} seconds).")
         print(f"Current worklist: {worklist}.")
         node = worklist.pop()
-        new_vector = update_node_state(cfg, states_vector, node, analyzer)
-        if new_vector != states_vector: 
+        new_dictionary = update_node_state(cfg, states_dictionary, node, analyzer)
+        if new_dictionary != states_dictionary: 
             dependencies = create_dependencies_of_node(cfg,node)
             worklist=worklist.union(dependencies)
-        states_vector = new_vector
+        states_dictionary = new_dictionary
         iteration = iteration + 1
-    return states_vector
+    return states_dictionary
                 
-def update_node_state(cfg, states_vector, node, analyzer):
-    new_vector = states_vector.copy()
+def update_node_state(cfg, states_dictionary, node, analyzer):
+    new_dictionary = states_dictionary.copy()
     ingoing_edges = cfg.ingoing_edges(node)
     if ingoing_edges:
         ingoing_states = []
@@ -49,16 +49,16 @@ def update_node_state(cfg, states_vector, node, analyzer):
             print("\n",line)
             start = line.start_label
 
-            print("\n",start,states_vector[start])
-            new_state = analyzer.execute_command_from_abstract_state(states_vector[start], line.command)
+            print("\n",start,new_dictionary[start])
+            new_state = analyzer.execute_command_from_abstract_state(states_dictionary[start], line.command)
             
             print("\n",node,new_state)
             ingoing_states.append(new_state)
         new_state_for_node = analyzer.lattice_class.join_list(ingoing_states)
         if len(ingoing_edges) > 1:
             print("\n","join_result for",node,new_state_for_node)
-        new_vector[node] = new_state_for_node
-    return new_vector
+        new_dictionary[node] = new_state_for_node
+    return new_dictionary
 
 def create_dependencies_of_node(cfg,node):
     result = set()

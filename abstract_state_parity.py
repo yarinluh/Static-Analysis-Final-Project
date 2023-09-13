@@ -144,7 +144,9 @@ class ParityStaticAnalyzer:
         if command.command_type == CommandType.C_Assert:
             or_condition: ORCondition = command.command_parameters['ORC']
             if not self._evaluate_orcondition_on_cartesian(or_condition, cartesian):
-                print(f"Assertaion {or_condition} failted due to: {cartesian}.")
+                print(f"Assertaion {or_condition} FAILED due to: {cartesian}.")
+            else:
+                print(f"Assertion {or_condition} SUCCEED on {cartesian}!")
             return {cartesian.copy()}
         
         raise ValueError(f"Ilegal command: {command}.")
