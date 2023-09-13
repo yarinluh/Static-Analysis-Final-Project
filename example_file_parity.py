@@ -16,4 +16,4 @@ def run_parity_example(index: int):
     chaotic_iteration(cfg, parity_analyzer)
 
 print("Started!")
-run_parity_example(7)
+run_parity_example(1)
