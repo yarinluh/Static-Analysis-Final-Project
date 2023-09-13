@@ -2,7 +2,7 @@ from saav_parser import Program
 from control_flow_graph import ControlFlowGraph
 from fixpoint import vanilla_fixpoint, chaotic_iteration
 from pathlib import Path
-from abstract_state_parity import ParityStaticAnalyzer
+from analysis_parity import ParityStaticAnalyzer
 
 def run_parity_example(index: int):
     path_to_program: Path = Path(f'examples_pairty\example{index}.txt')
