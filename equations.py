@@ -130,7 +130,7 @@ def get_all_possible_equations(EquationClass: Type, list_of_equations: list,
         """
         return all_equations
 
-    result: Set[EquationClass] = set(list_of_equations).intersection(all_equationsC)
+    result: Set[EquationClass] = set(list_of_equations).intersection(all_equations)
     equations_to_skip: Set[EquationClass] = set()
 
     for equation in all_equations:
