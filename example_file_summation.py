@@ -1,7 +1,7 @@
 from pathlib import Path
 from saav_parser import Program
 from control_flow_graph import ControlFlowGraph
-from new_summation_analysis import SummationStaticAnalyzer
+from analysis_summation import SummationStaticAnalyzer
 from fixpoint import chaotic_iteration
 
 def run_summation_example(index: int):

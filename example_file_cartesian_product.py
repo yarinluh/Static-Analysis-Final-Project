@@ -1,7 +1,7 @@
 from pathlib import Path
 from saav_parser import Program
 from control_flow_graph import ControlFlowGraph
-from cartesian_product_parity_summation import ParitySummationCartesianProduct
+from analysis_cartesian_product import ParitySummationCartesianProduct
 from fixpoint import chaotic_iteration
 
 def run_example(index: int):

@@ -1,7 +1,7 @@
-from abstract_state_parity import ParityStaticAnalyzer
+from analysis_parity import ParityStaticAnalyzer
 from equations import solve_linear_equations
 from lattice_creation import create_cartesian_product_two_lattices
-from new_summation_analysis import SummationStaticAnalyzer
+from analysis_summation import SummationStaticAnalyzer
 from typing import Tuple, List
 from saav_parser import BOOLCondition, BoolConditionType, ORCondition, ANDCondition, Command, CommandType
 

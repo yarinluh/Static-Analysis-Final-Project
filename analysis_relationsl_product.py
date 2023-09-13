@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import Tuple, List, Type, Set, Iterator
 from lattice_creation import Lattice
-from abstract_state_parity import ParityStaticAnalyzer
-from new_summation_analysis import SummationStaticAnalyzer
+from analysis_parity import ParityStaticAnalyzer
+from analysis_summation import SummationStaticAnalyzer
 from saav_parser import Command, CommandType, ORCondition, BOOLCondition, BoolConditionType, ANDCondition
 from equations import solve_linear_equations
 
@@ -158,7 +158,7 @@ class ParitySummationRelationalProduct:
             if succes:
                 print("\nAssertin succeded!!!")
             
-            new_set = current_state.tuples_set.copy()
+            new_set = current_state.tuples_set.copy() # type: ignore
 
         return self.lattice_class(parity_equations_tuples_set = new_set) # type: ignore
 
