@@ -1,17 +1,7 @@
-i j l x y z m
+i j x y
 
-L0   i := ?    L1
-L1   j := i    L2
-L2   l := i    L3
-L3   x := ?    L4
-L4   y := x    L5
-L5   z := x    L6
-L6   m := ?    L7
-L7   assume m != 0   L8
-L8   j := l + 1   L9
-L9   l := j   L10
-L10   y := z - 1   L11
-L11   z := y   L12
-L12   m := m - 1   L7
-L7   assume m = 0   L13
-L13   assert (SUM i x = SUM j y)  L14
+L0   i := ?   L1
+L1   j := ?   L2
+L2   x := i + 1  L3
+L3   y := j - 1  L4
+L4   assert (SUM i j = SUM x y)   L5

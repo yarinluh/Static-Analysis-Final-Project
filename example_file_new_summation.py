@@ -22,4 +22,4 @@ def run_summation_example(index: int):
     #     print(item)
 
 
-run_summation_example(5)
+run_summation_example(7)

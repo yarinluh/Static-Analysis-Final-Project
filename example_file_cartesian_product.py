@@ -5,7 +5,7 @@ from cartesian_product_parity_summation import ParitySummationCartesianProduct
 from fixpoint import chaotic_iteration
 
 def run_example(index: int):
-    path_to_program: Path = Path(f'combined_examples\example{index}.txt')
+    path_to_program: Path = Path(f'examples_combined\example{index}.txt')
     p = Program(path_to_program)
 
     cfg = ControlFlowGraph(program=p)
@@ -23,4 +23,4 @@ def run_example(index: int):
     #     print(item)
 
 
-run_example(2)
+run_example(3)

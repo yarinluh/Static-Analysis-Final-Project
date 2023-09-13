@@ -1,11 +1,9 @@
-n i j
+x y z w
 
-L0   n := ?   L1
-L1   i := 0   L2
-L2   j := 0   L3
-L3   assume i = n   L6
-L3   assume i != n  L4
-L4   i := j + 1  L5
-L5   j := i  L3
-L6   assert (SUM i j = SUM j n)  L7
-
+L0      x := ?      L1
+L1      y := ?      L2
+L2      z := ?      L3
+L3      w := ?      L4
+L4      assume x = y   L5
+L5      assume z = w   L6
+L6      assert (SUM z x = SUM w y)      L7

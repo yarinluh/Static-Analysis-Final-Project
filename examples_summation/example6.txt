@@ -1,12 +1,17 @@
-x y z i j
+i j l x y z m
 
-
-L8     z := 0      L0
-L0      x := ?     L1
-L1      i := 1      L2
-L2      j := z - 1     L3
-L3      assume x = 0     L4
-L4      y := i - 1      L6
-L3      assume x != 0    L5
-L5      y := j + 1      L6
-L6      assert (SUM y x = SUM z x)      L7
+L0   i := ?    L1
+L1   j := i    L2
+L2   l := i    L3
+L3   x := ?    L4
+L4   y := x    L5
+L5   z := x    L6
+L6   m := ?    L7
+L7   assume m != 0   L8
+L8   j := l + 1   L9
+L9   l := j   L10
+L10   y := z - 1   L11
+L11   z := y   L12
+L12   m := m - 1   L7
+L7   assume m = 0   L13
+L13   assert (SUM i x = SUM j y)  L14
